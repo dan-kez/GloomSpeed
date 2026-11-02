@@ -84,7 +84,7 @@ This takes a few Terminal commands, because macOS blocks downloaded mod files un
 2. Open that folder and your **game folder** side by side in Finder.
 3. Move everything from the unzipped folder into the game folder, so that `run_bepinex.sh` and the `BepInEx` folder sit next to `GH_OSX.app`.
 4. Open **Terminal** (press Cmd+Space, type `Terminal`, press Return). Type `cd` and a **space**, drag the game folder into the Terminal window, and press Return.
-5. Allow the mod files to run. Paste each line and press Return:
+5. Allow the mod files to run. **Don't skip this: without it, macOS blocks the mod and the game won't start.** Paste each line and press Return:
    ```
    chmod u+x run_bepinex.sh
    xattr -dr com.apple.quarantine run_bepinex.sh libdoorstop.dylib BepInEx
@@ -127,6 +127,7 @@ Your settings are kept. Move only that file: dragging the whole `BepInEx` folder
 |---|---|
 | The game won't start or behaves oddly | Follow the **Remove** steps. Your game is then back to normal. |
 | The Game Speed row is missing | The original Auto Fast Forward row stays in its place. Open an issue with `BepInEx/LogOutput.log`. |
+| Mac: **"libdoorstop.dylib" Not Opened**, and the game won't start | Click **Done**, not Move to Trash. Then run the `xattr` command from step 5 in your game folder and start the game again. |
 | The check shows `failed:` above 0 | The mod still works, with that feature turned off. Please open an issue. |
 | No `.app` in the Mac game folder | Your copy may not be the macOS version. |
 | A desync in multiplayer | Open an issue saying when it happened, with `BepInEx/LogOutput.log`. |
