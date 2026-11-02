@@ -14,11 +14,10 @@ namespace GloomSpeed
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.kez.gloomspeed";
-        public const string Version = "0.2.0";
+        public const string Version = "0.3.0";
+        public const string RepoUrl = "https://github.com/dan-kez/gloomspeed";
 
         internal static ManualLogSource Log;
-
-        private bool _presenceUnavailable;
 
         private void Awake()
         {
@@ -48,6 +47,7 @@ namespace GloomSpeed
             var (ok, failed) = Apply(harmony, new[]
             {
                 typeof(StartSpeedUpPatch),
+                typeof(SpeedToggleSetterPatch),
                 typeof(StopSpeedUpPatch),
                 typeof(EndTurnSyncSpeedPatch),
                 typeof(EnemyBannerPatch),
@@ -59,7 +59,12 @@ namespace GloomSpeed
                 typeof(SpeedHotkeyPatch),
                 typeof(SimpleLogPatch),
                 typeof(DllDebugPatch),
+                typeof(SettingsRowPatch),
+                typeof(SkipIntroPatch),
+                typeof(SkipEpicLoginPatch),
+                typeof(MultiplayerMenuStatusPatch),
             });
+            Cfg.Preset.SettingChanged += (_, _) => Presets.ApplyLive();
             Log.LogInfo($"GloomSpeed patches applied: {ok}, failed: {failed}.");
 
             if (Cfg.QuietUnityLog.Value)
@@ -93,21 +98,7 @@ namespace GloomSpeed
 
         private void Update()
         {
-            if (_presenceUnavailable)
-            {
-                return;
-            }
-            try
-            {
-                PresenceStatus.Tick();
-            }
-            catch (Exception e)
-            {
-                // This build references the Windows Steamworks assembly. Where it can't be resolved,
-                // as expected on macOS, only the status feature is lost.
-                _presenceUnavailable = true;
-                Log.LogWarning("Presence status unavailable on this platform: " + e.Message);
-            }
+            PresenceStatus.Tick();
         }
 
         private void OnGUI()
@@ -124,9 +115,11 @@ namespace GloomSpeed
     internal static class Cfg
     {
         internal static ConfigEntry<bool> Enabled;
+        internal static ConfigEntry<SpeedPreset> Preset;
+        internal static ConfigEntry<bool> SkipIntro;
+        internal static ConfigEntry<bool> SkipEpicLogin;
         internal static ConfigEntry<float> Multiplier;
         internal static ConfigEntry<float> EnemyTurnMultiplier;
-        internal static ConfigEntry<bool> AlwaysFastForward;
         internal static ConfigEntry<bool> KeepSpeedAtEndOfTurn;
         internal static ConfigEntry<bool> AllowClientHotkey;
         internal static ConfigEntry<bool> SkipEnemyBanner;
@@ -141,18 +134,24 @@ namespace GloomSpeed
         internal static ConfigEntry<bool> AckTimingLog;
         internal static ConfigEntry<bool> PresenceStatus;
         internal static ConfigEntry<bool> PresenceOverlay;
+        internal static ConfigEntry<bool> UiDebugLog;
 
         internal static void Bind(ConfigFile c)
         {
-            Enabled = c.Bind("General", "Enabled", true, "Master switch. False applies no patches (restart required).");
+            Enabled = c.Bind("General", "Enabled", true, "Master switch. False applies no patches and removes the settings row (restart required).");
+            Preset = c.Bind("General", "Preset", SpeedPreset.Fastest,
+                "Normal, FastForward, Faster or Fastest. Also changed from Options > General in the game, which applies immediately. The Speed values below and the attack reveal scale tune Fastest; the other Pacing values apply to Faster too.");
+
+            SkipIntro = c.Bind("Startup", "SkipIntro", false,
+                "Skip the intro video and logos when the game starts. Also changed from Options > General. Takes effect on the next launch.");
+            SkipEpicLogin = c.Bind("Startup", "SkipEpicLogin", false,
+                "Don't open the Epic account login window when no Epic login is saved. Epic features, such as Epic friends and invites, stay unavailable. Also changed from Options > General. Takes effect on the next launch.");
 
             var range = new AcceptableValueRange<float>(1f, 16f);
             Multiplier = c.Bind("Speed", "Multiplier", 5f,
                 new ConfigDescription("Fast Forward speed outside enemy turns. The game's own value is 3.", range));
             EnemyTurnMultiplier = c.Bind("Speed", "EnemyTurnMultiplier", 6f,
                 new ConfigDescription("Fast Forward speed while the current actor is an enemy. Higher values are more likely to break visuals.", range));
-            AlwaysFastForward = c.Bind("Speed", "AlwaysFastForward", true,
-                "Treat the Fast Forward option as on. The host waits for the slowest client, so every player should enable this.");
             KeepSpeedAtEndOfTurn = c.Bind("Speed", "KeepSpeedAtEndOfTurn", true,
                 "The game forces 1x while waiting for end-of-turn idle and damage-label fades. Keep Fast Forward running through that wait.");
             AllowClientHotkey = c.Bind("Speed", "AllowClientHotkey", true,
@@ -181,9 +180,11 @@ namespace GloomSpeed
             AckTimingLog = c.Bind("Diagnostics", "AckTimingLog", true,
                 "As host, record when each player reaches the end of each ability, turn and round, in BepInEx/GloomSpeed. Works with General.Enabled off.");
             PresenceStatus = c.Bind("Diagnostics", "PresenceStatus", true,
-                "Share mod version and speed with Steam friends through Rich Presence, and read theirs. Logged to BepInEx/LogOutput.log.");
+                "Share mod version and Game Speed with Steam friends through Rich Presence, and read theirs. Shown in the in-game multiplayer menu and logged to BepInEx/LogOutput.log.");
+            UiDebugLog = c.Bind("Diagnostics", "UiDebugLog", false,
+                "Write the multiplayer menu's layout to BepInEx/LogOutput.log once per run, for fixing UI problems.");
             PresenceOverlay = c.Bind("Diagnostics", "PresenceOverlay", true,
-                "Show each player's mod status on screen during multiplayer.");
+                "During multiplayer, show an on-screen warning if another player's mod version or Game Speed differs, or their mod can't be detected.");
         }
     }
 }

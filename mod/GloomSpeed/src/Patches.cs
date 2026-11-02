@@ -43,11 +43,8 @@ namespace GloomSpeed
 
         private static void Prefix(GlobalData __instance)
         {
-            if (Cfg.AlwaysFastForward.Value)
-            {
-                // Field, not property: the property setter calls StartSpeedUp again.
-                Toggle(__instance) = true;
-            }
+            // Field, not property: the property setter calls StartSpeedUp again.
+            Toggle(__instance) = Presets.GameToggle;
 
             var scene = SceneController.Instance;
             if (scene == null)
@@ -57,11 +54,52 @@ namespace GloomSpeed
 
             var choreographer = Choreographer.s_Choreographer;
             bool enemyTurn = choreographer != null && choreographer.CurrentActor is CEnemyActor;
-            float target = enemyTurn ? Cfg.EnemyTurnMultiplier.Value : Cfg.Multiplier.Value;
+            float target = enemyTurn ? Presets.EnemyMultiplier : Presets.Multiplier;
             if (scene.GameSpeedIncreaseAmount != target)
             {
                 scene.GameSpeedIncreaseAmount = target;
             }
+        }
+    }
+
+    /// <summary>
+    /// The preset owns the game's Fast Forward option. Anything else that flips it changes the preset,
+    /// which then sets the option back through SetQuietly. The exception is the game's Skip Attack key,
+    /// which also flips it. A key that skips attacks shouldn't change speed, so that press is ignored.
+    /// </summary>
+    [HarmonyPatch(typeof(GlobalData), "set_SpeedUpToggle")]
+    internal static class SpeedToggleSetterPatch
+    {
+        private static bool quiet;
+
+        internal static void SetQuietly(GlobalData global, bool value)
+        {
+            quiet = true;
+            try
+            {
+                global.SpeedUpToggle = value;
+            }
+            finally
+            {
+                quiet = false;
+            }
+        }
+
+        private static bool Prefix(bool value)
+        {
+            if (quiet)
+            {
+                return true;
+            }
+            if (global::InputManager.GetWasPressed(KeyAction.SKIP_ATTACK))
+            {
+                return false;
+            }
+            if (value != Presets.GameToggle)
+            {
+                Cfg.Preset.Value = Presets.FromGameToggle(value);
+            }
+            return false;
         }
     }
 
@@ -71,7 +109,7 @@ namespace GloomSpeed
     {
         private static bool Prefix()
         {
-            return !(Cfg.KeepSpeedAtEndOfTurn.Value && InEndTurnSync());
+            return !(Presets.Active && Cfg.KeepSpeedAtEndOfTurn.Value && InEndTurnSync());
         }
 
         private static bool InEndTurnSync()
@@ -100,7 +138,7 @@ namespace GloomSpeed
 
         private static void Postfix(Choreographer.ChoreographerStateType eState, bool __state)
         {
-            if (!Cfg.KeepSpeedAtEndOfTurn.Value)
+            if (!Presets.Active || !Cfg.KeepSpeedAtEndOfTurn.Value)
             {
                 return;
             }
@@ -142,7 +180,7 @@ namespace GloomSpeed
     {
         private static bool Prefix(Action onClosed)
         {
-            if (!Cfg.SkipEnemyBanner.Value)
+            if (!Presets.Active || !Cfg.SkipEnemyBanner.Value)
             {
                 return true;
             }
@@ -182,7 +220,7 @@ namespace GloomSpeed
 
         private static void Postfix(LeanTweenGUIAnimator __instance)
         {
-            float scale = Cfg.OtherBannerTimeScale.Value;
+            float scale = Presets.OtherBannerScale;
             if (scale >= 1f)
             {
                 return;
@@ -209,7 +247,7 @@ namespace GloomSpeed
     {
         private static void Prefix(ref int waitTickFrame)
         {
-            if (waitTickFrame == 400)
+            if (Presets.Active && waitTickFrame == 400)
             {
                 waitTickFrame = Cfg.NoAnimWaitMs.Value;
             }
@@ -224,18 +262,44 @@ namespace GloomSpeed
     internal static class AttackModBarAwakePatch
     {
         private static GlobalSettings.AttackModifierSettings scaledSettings;
+        private static float baseRollingDuration;
+        private static float baseTimeScaler = -1f;
 
         private static void Postfix(AttackModBar __instance)
         {
-            float scale = Cfg.AttackModifierTimeScale.Value;
-            __instance.testTimeScaler = scale;
-
-            var settings = GlobalSettings.Instance != null ? GlobalSettings.Instance.m_AttackModifierSettings : null;
-            if (settings != null && !ReferenceEquals(settings, scaledSettings))
+            if (baseTimeScaler < 0f)
             {
-                settings.RollingModDuration *= scale;
+                baseTimeScaler = __instance.testTimeScaler;
+            }
+            __instance.testTimeScaler = baseTimeScaler * Presets.AttackModifierScale;
+            ApplyRolling();
+        }
+
+        internal static void ApplyAll()
+        {
+            if (baseTimeScaler >= 0f)
+            {
+                foreach (var bar in UnityEngine.Object.FindObjectsOfType<AttackModBar>(true))
+                {
+                    bar.testTimeScaler = baseTimeScaler * Presets.AttackModifierScale;
+                }
+            }
+            ApplyRolling();
+        }
+
+        private static void ApplyRolling()
+        {
+            var settings = GlobalSettings.Instance != null ? GlobalSettings.Instance.m_AttackModifierSettings : null;
+            if (settings == null)
+            {
+                return;
+            }
+            if (!ReferenceEquals(settings, scaledSettings))
+            {
+                baseRollingDuration = settings.RollingModDuration;
                 scaledSettings = settings;
             }
+            settings.RollingModDuration = baseRollingDuration * Presets.AttackModifierScale;
         }
     }
 
@@ -249,7 +313,7 @@ namespace GloomSpeed
         private static void Prefix(ref bool pauseDuringTransition)
         {
             var choreographer = Choreographer.s_Choreographer;
-            if (Cfg.NoPauseDuringEnemyCamera.Value && choreographer != null && choreographer.CurrentActor is CEnemyActor)
+            if (Presets.Active && Cfg.NoPauseDuringEnemyCamera.Value && choreographer != null && choreographer.CurrentActor is CEnemyActor)
             {
                 pauseDuringTransition = false;
             }
@@ -259,9 +323,21 @@ namespace GloomSpeed
     [HarmonyPatch(typeof(CameraController), "Awake")]
     internal static class CameraAwakePatch
     {
+        private static float baseFocusSpeed;
+
         private static void Postfix(CameraController __instance)
         {
-            __instance.m_FocusSpeed *= Cfg.CameraFocusSpeedScale.Value;
+            baseFocusSpeed = __instance.m_FocusSpeed;
+            __instance.m_FocusSpeed = baseFocusSpeed * Presets.CameraFocusScale;
+        }
+
+        internal static void Apply()
+        {
+            var camera = CameraController.s_CameraController;
+            if (camera != null && baseFocusSpeed > 0f)
+            {
+                camera.m_FocusSpeed = baseFocusSpeed * Presets.CameraFocusScale;
+            }
         }
     }
 

@@ -8,6 +8,7 @@ while [ $# -gt 0 ]; do case "$1" in
  move) X=$(sc $2);Y=$(sc $3); xte "mousemove $X $Y"; shift 3;;
  key) xte "keydown $2"; sleep 0.12; xte "keyup $2"; shift 2;;
  scroll) for i in $(seq 1 $2); do xte "mouseclick 5"; sleep 0.05; done; shift 2;;
+ ctrlkey) xte "keydown Control_L"; sleep 0.1; xte "keydown $2"; sleep 0.12; xte "keyup $2"; sleep 0.05; xte "keyup Control_L"; shift 2;;
  str) xte "str $2"; shift 2;;
  shot) $T/snap.sh "$2"; shift 2;;
  wait) sleep "$2"; shift 2;;

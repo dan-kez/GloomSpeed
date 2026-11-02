@@ -2,7 +2,7 @@
 
 BepInEx 5 plugin that shortens presentation delays in Gloomhaven (Steam, Windows build, Unity 2021.3.5 Mono).
 
-**Prototype.** 0.1.0 passed solo testing under Proton (`../test/REPORT.md`). 0.2.0 has loaded to the main menu under Proton with all patches applied, but the timing log and reading other players' status need a multiplayer session and have not run. Nothing has been tested in multiplayer or on real Windows. On macOS (`GH_OSX.app`, Intel-only under Rosetta) all 18 patches apply at startup, but it hasn't been played. Presence status is unavailable there because this DLL references `Facepunch.Steamworks.Win64` and the Mac build ships `Facepunch.Steamworks.Posix`. Try it on a throwaway scenario first.
+**Prototype.** 0.1.0 passed solo testing under Proton (`../test/REPORT.md`). The 0.3.0 settings rows and multiplayer section were checked solo under Proton and by hand on macOS (`GH_OSX.app`, Intel-only under Rosetta). One macOS run on an earlier 0.3.0 build ended in a WindowServer watchdog panic, cause unknown. Nothing has been tested with another player or on real Windows. This exact build's removal of the speed key hasn't been run in-game.
 
 It changes pacing on the machine it runs on. It sends no game network messages, skips no acknowledgements, and does not touch rule code or random numbers. The host still waits for the slowest client, so everyone needs it for the full benefit. A mixed group should work, but that is untested too.
 
@@ -28,18 +28,18 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
    Without this, Wine uses its own `winhttp` and BepInEx never loads. Windows players skip this step.
 4. Start the game once and quit. `BepInEx/plugins` and `BepInEx/config` should now exist. If not, check step 3.
 5. Copy `GloomSpeed.dll` to `BepInEx/plugins/`.
-6. Start the game and check `BepInEx/LogOutput.log` for `GloomSpeed patches applied: 12, failed: 0` and `GloomSpeed diagnostic patches applied: 6, failed: 0`.
+6. Start the game and check `BepInEx/LogOutput.log` for `GloomSpeed patches applied: 17, failed: 0` and `GloomSpeed diagnostic patches applied: 6, failed: 0`.
 
 ## Config
 
-`BepInEx/config/com.kez.gloomspeed.cfg` appears after the first run with the plugin. Restart the game after changing it.
+`BepInEx/config/com.kez.gloomspeed.cfg` appears after the first run with the plugin. Restart the game after changing it. `General.Preset` is normally set in the game, under Options > General > Game Speed, which applies immediately. It replaces the Auto Fast Forward Animations row and owns that setting. The game's Skip Attack key no longer changes speed. The `Speed` multipliers and `AttackModifierTimeScale` tune Fastest. The other `Pacing` values apply to both Faster and Fastest.
 
 | Setting | Default | Vanilla equivalent |
 |---|---|---|
 | `General.Enabled` | true | false |
+| `General.Preset` | Fastest | FastForward |
 | `Speed.Multiplier` | 5 | 3 |
 | `Speed.EnemyTurnMultiplier` | 6 | 3 |
-| `Speed.AlwaysFastForward` | true | false |
 | `Speed.KeepSpeedAtEndOfTurn` | true | false |
 | `Speed.AllowClientHotkey` | true | false |
 | `Pacing.SkipEnemyBanner` | true | false |
@@ -54,6 +54,9 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
 | `Diagnostics.AckTimingLog` | true | n/a |
 | `Diagnostics.PresenceStatus` | true | n/a |
 | `Diagnostics.PresenceOverlay` | true | n/a |
+| `Diagnostics.UiDebugLog` | false | n/a |
+| `Startup.SkipIntro` | false | false |
+| `Startup.SkipEpicLogin` | false | false |
 
 If something misbehaves, set `General.Enabled` to false first. Then turn features on one at a time. Set the three `Logging` values to false before reporting a bug, because they remove most of `Player.log`.
 
@@ -63,7 +66,7 @@ Both work with `General.Enabled` off, so an unmodified session can be measured.
 
 **Acknowledgement timing (host only).** Other players don't need the mod. The host records when each player reaches the end of each ability, turn and round, and writes `BepInEx/GloomSpeed/acks-<time>.csv` and `acks-<time>-summary.txt`. The summary updates every 25 syncs and on exit. It lists each player's median and worst lag behind the first player to arrive, and the total time they alone made everyone wait. Arrival times are taken on the host, so they include network delay. These files contain player names. Only players controlling a hero are waited on, so anyone without one won't appear as holding the group up.
 
-**Presence status (Steam).** Each modded player publishes `version;on|off;multiplier;enemyMultiplier` through Steam Rich Presence, outside the game's network traffic. During multiplayer the mod reads other players' values, shows them in a small on-screen box, and logs changes to `BepInEx/LogOutput.log`. Steam exposes these values only for friends, so "nothing reported" doesn't prove someone lacks the mod. It can't see the game's own Fast Forward setting.
+**Presence status (Steam).** The library is found at runtime, so this works on Windows and macOS. Each modded player publishes `version;preset;multiplier;enemyMultiplier` through Steam Rich Presence, outside the game's network traffic. During multiplayer the mod reads other players' values, lists them in a GloomSpeed section in the in-game multiplayer menu, warns on screen if something differs, and logs changes to `BepInEx/LogOutput.log`. Steam exposes these values only for friends, so "nothing reported" doesn't prove someone lacks the mod. It can't see the game's own Fast Forward setting.
 
 ## Uninstall
 
