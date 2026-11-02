@@ -3,6 +3,7 @@
 /*
 !/.gitignore
 !/README.md
+!/INSTALL.md
 !/baseline/
 /baseline/*
 !/baseline/REPORT.md
@@ -16,6 +17,9 @@
 !/mod/install/
 /mod/install/*
 !/mod/install/gloomspeed.sh
+!/mod/install/package.sh
+!/mod/install/windows/
+!/mod/install/macos/
 !/mod/test/
 /mod/test/*
 !/mod/test/tools/

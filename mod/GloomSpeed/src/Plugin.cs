@@ -11,13 +11,14 @@ namespace GloomSpeed
     /// network message, skips an acknowledgement, or touches ScenarioRuleLibrary rule code or RNG.
     /// </summary>
     [BepInPlugin(Guid, "GloomSpeed", Version)]
-    [BepInProcess("GH.exe")]
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.kez.gloomspeed";
         public const string Version = "0.2.0";
 
         internal static ManualLogSource Log;
+
+        private bool _presenceUnavailable;
 
         private void Awake()
         {
@@ -92,7 +93,21 @@ namespace GloomSpeed
 
         private void Update()
         {
-            PresenceStatus.Tick();
+            if (_presenceUnavailable)
+            {
+                return;
+            }
+            try
+            {
+                PresenceStatus.Tick();
+            }
+            catch (Exception e)
+            {
+                // This build references the Windows Steamworks assembly. Where it can't be resolved,
+                // as expected on macOS, only the status feature is lost.
+                _presenceUnavailable = true;
+                Log.LogWarning("Presence status unavailable on this platform: " + e.Message);
+            }
         }
 
         private void OnGUI()

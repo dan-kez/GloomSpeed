@@ -2,7 +2,7 @@
 
 BepInEx 5 plugin that shortens presentation delays in Gloomhaven (Steam, Windows build, Unity 2021.3.5 Mono).
 
-**Prototype.** 0.1.0 loaded and ran in solo testing under Proton. The 0.2.0 diagnostics compile and their targets are verified, but have not been run in-game, and nothing has been tested in multiplayer. Try it on a throwaway scenario first.
+**Prototype.** 0.1.0 loaded and ran in solo testing under Proton. The 0.2.0 diagnostics compile and their targets are verified, but have not been run in-game. Nothing has been tested in multiplayer, on Windows or on macOS. The macOS build's assemblies have not been inspected, and presence status is expected to be unavailable there because this DLL references the Windows Steamworks assembly. Try it on a throwaway scenario first.
 
 It changes pacing on the machine it runs on. It sends no game network messages, skips no acknowledgements, and does not touch rule code or random numbers. The host still waits for the slowest client, so everyone needs it for the full benefit. A mixed group should work, but that is untested too.
 
@@ -17,7 +17,7 @@ Set `-p:GameManaged=...` or `-p:BepInExCore=...` if your paths differ. The build
 
 ## Install
 
-Each player does this, with the game closed.
+Players should use the [install guide](../../INSTALL.md). These are the manual steps for Proton on Linux; `../install/gloomspeed.sh` automates them. Each player does this, with the game closed.
 
 1. Download `BepInEx_win_x64_5.4.23.6.zip` from https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.6 (SHA-256 `6c57a714a892efb4e9e1fef63d608a3391f30ec984031c465404e4ee381a0755`).
 2. Extract it into the game folder, so `winhttp.dll` sits next to `GH.exe`. On Linux that is `~/.local/share/Steam/steamapps/common/Gloomhaven`.
