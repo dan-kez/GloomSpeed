@@ -45,8 +45,10 @@ During multiplayer:
 - A **GloomSpeed** section in the in-game **Multiplayer** menu lists each player's mod version and Game Speed.
 - A notice appears at the top right if someone's version or speed differs, or their status can't be read.
 - It fixes a game bug where a player could stay stuck on "Waiting for other players..." when a scenario starts. Every player needs this version for that to help them.
-- At **Faster** and **Fastest**, personal quest progress after a scenario shows all at once, not one at a time.
+- At **Faster** and **Fastest**, personal quest progress after a scenario shows all at once, not one at a time. Four toasts take about 5.6 seconds, down from about 22.
 - The host's game can write a log of how long each player takes to finish each step, in `BepInEx/GloomSpeed`. It's stored locally, includes player names, and isn't uploaded.
+
+![Two personal quest toasts showing at once at the top right of the world map](docs/media/quest-toasts-together.png)
 
 The game's Skip Attack key no longer changes speed.
 
