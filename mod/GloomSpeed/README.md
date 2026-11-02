@@ -2,7 +2,7 @@
 
 BepInEx 5 plugin that shortens presentation delays in Gloomhaven (Steam, Windows build, Unity 2021.3.5 Mono).
 
-**Prototype.** 0.1.0 loaded and ran in solo testing under Proton. The 0.2.0 diagnostics compile and their targets are verified, but have not been run in-game. Nothing has been tested in multiplayer, on Windows or on macOS. The macOS build's assemblies have not been inspected, and presence status is expected to be unavailable there because this DLL references the Windows Steamworks assembly. Try it on a throwaway scenario first.
+**Prototype.** 0.1.0 passed solo testing under Proton (`../test/REPORT.md`). 0.2.0 has loaded to the main menu under Proton with all patches applied, but the timing log and reading other players' status need a multiplayer session and have not run. Nothing has been tested in multiplayer, on Windows or on macOS. The macOS build's assemblies have not been inspected, and presence status is expected to be unavailable there because this DLL references the Windows Steamworks assembly. Try it on a throwaway scenario first.
 
 It changes pacing on the machine it runs on. It sends no game network messages, skips no acknowledgements, and does not touch rule code or random numbers. The host still waits for the slowest client, so everyone needs it for the full benefit. A mixed group should work, but that is untested too.
 

@@ -23,6 +23,7 @@
 !/mod/test/
 /mod/test/*
 !/mod/test/tools/
+!/mod/test/REPORT.md
 *.dll
 *.pdb
 *.log

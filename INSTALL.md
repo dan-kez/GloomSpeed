@@ -4,7 +4,7 @@ GloomSpeed makes Gloomhaven's animations and enemy turns faster. It changes paci
 
 **Everyone in your group should install it.** The host waits for the slowest player, so one player without it can hold up the group.
 
-> **This is an early test version.** Earlier builds have only been run on Linux, in solo play. Nothing has been run on a real Windows PC or Mac, or in multiplayer. On Mac, some features may be missing, and the mod might not load at all. Expect rough edges, and tell Kez what happens.
+> **This is an early test version.** It has only been run on Linux, in solo play. Nothing has been run on a real Windows PC or Mac, or in multiplayer. On Mac, some features may be missing, and the mod might not load at all. Expect rough edges, and tell Kez what happens.
 
 ## Before you start
 

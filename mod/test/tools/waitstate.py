@@ -20,7 +20,7 @@ with open(log,errors='replace') as f:
         if 'tween' in l or 'LogEOS' in l or ' at ' in l[12:18]: continue
         quiet=time.time()
         if 'Finish  ShowAttackModifDamage coroutine' in l:
-            time.sleep(0.3); subprocess.run([G,'key',os.environ.get('DMGKEY','c')])
+            time.sleep(float(os.environ.get('DMGDELAY','0.3'))); subprocess.run([G,'key',os.environ.get('DMGKEY','c')])
         m=pat.search(l)
         if m:
             print(m.lastgroup,l.strip()[:150]); break
