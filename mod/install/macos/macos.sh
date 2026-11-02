@@ -1,5 +1,6 @@
 #!/bin/bash
-# GloomSpeed installer for macOS. Usage: bash macos.sh install | uninstall
+# GloomSpeed installer for macOS. Players double-click "GloomSpeed install - macOS.command", which runs this.
+# Usage: bash macos.sh install | uninstall
 # GLOOMSPEED_GAME_DIR overrides the game folder, GLOOMSPEED_BEPINEX_ZIP uses a local BepInEx zip.
 set -euo pipefail
 
@@ -78,7 +79,7 @@ echo "Game folder: $GAME"
 if pgrep -f 'Gloomhaven/.*\.app/Contents/MacOS' >/dev/null; then die "Gloomhaven is running. Close it and try again."; fi
 
 if [ "$ACTION" = uninstall ]; then
-	[ -f "$GAME/$RECORD" ] || die "GloomSpeed is not installed in this folder."
+	[ -f "$GAME/$RECORD" ] || die "this installer didn't install GloomSpeed here. If you installed it by hand, follow the Remove steps in the install guide."
 	if [ -d "$GAME/BepInEx/GloomSpeed" ]; then
 		cp -R "$GAME/BepInEx/GloomSpeed" "$HOME/Documents/GloomSpeed-logs-$STAMP"
 		echo "Timing logs kept at: $HOME/Documents/GloomSpeed-logs-$STAMP"
@@ -98,10 +99,12 @@ fi
 
 [ -f "$HERE/GloomSpeed.dll" ] || die "GloomSpeed.dll is missing. Unzip the whole package and run this from that folder."
 
-if [ -f "$GAME/$RECORD" ]; then
+if [ -f "$GAME/$RECORD" ] || [ -f "$GAME/BepInEx/plugins/GloomSpeed.dll" ]; then
 	cp "$HERE/GloomSpeed.dll" "$GAME/BepInEx/plugins/GloomSpeed.dll"
-	echo "GloomSpeed was already installed, so its DLL has been updated."
+	echo "GloomSpeed was already installed, so it has been updated. Your settings are kept."
 	check
+	echo
+	echo "If you've already set the Steam launch option, you're done."
 	launch_help
 	exit 0
 fi
@@ -146,5 +149,5 @@ fi
 echo
 echo "Installed."
 launch_help
-echo "Then start the game from Steam. To check it worked: reach the main menu, quit,"
-echo "and run this installer again."
+echo "Then start the game from Steam. To check it worked, open Options > General in the"
+echo "game and look for Game Speed."

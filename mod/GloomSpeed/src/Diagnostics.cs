@@ -310,7 +310,51 @@ namespace GloomSpeed
         private static readonly PropertyInfo FriendIsFriend = FriendType.GetProperty("IsFriend");
         private static readonly MethodInfo FriendPresence = FriendType.GetMethod("GetRichPresence", new[] { typeof(string) });
 
+        private static readonly Type NetworkingType = Library.GetType("Steamworks.SteamNetworking", true);
+
+        private static readonly MethodInfo SendP2P = NetworkingType.GetMethods(PublicStatic).First(method =>
+            method.Name == "SendP2PPacket" && method.GetParameters()[1].ParameterType == typeof(byte[]));
+
+        private static readonly object Reliable = Enum.Parse(SendP2P.GetParameters()[4].ParameterType, "Reliable");
+
+        private static readonly MethodInfo ReadP2P = NetworkingType.GetMethods(PublicStatic).First(method =>
+            method.Name == "ReadP2PPacket" && method.GetParameters().Length == 1);
+
+        private static readonly MethodInfo CloseP2P = NetworkingType.GetMethod("CloseP2PSessionWithUser", PublicStatic);
+
         internal static bool IsValid => (bool)ClientValid.GetValue(null);
+
+        private static object ToSteamId(ulong steamId)
+        {
+            object id = Activator.CreateInstance(SteamIdType);
+            SteamIdValue.SetValue(id, steamId);
+            return id;
+        }
+
+        internal static void SendPacket(ulong steamId, byte[] data, int channel)
+        {
+            SendP2P.Invoke(null, new[] { ToSteamId(steamId), data, -1, channel, Reliable });
+        }
+
+        internal static bool TryReadPacket(int channel, out ulong sender, out byte[] data)
+        {
+            sender = 0;
+            data = null;
+            object packet = ReadP2P.Invoke(null, new object[] { channel });
+            if (packet == null)
+            {
+                return false;
+            }
+            var type = packet.GetType();
+            sender = (ulong)SteamIdValue.GetValue(type.GetField("SteamId").GetValue(packet));
+            data = (byte[])type.GetField("Data").GetValue(packet);
+            return true;
+        }
+
+        internal static void CloseSession(ulong steamId)
+        {
+            CloseP2P.Invoke(null, new[] { ToSteamId(steamId) });
+        }
 
         internal static bool Publish(string key, string value)
         {
@@ -320,9 +364,7 @@ namespace GloomSpeed
         /// <summary>False if they aren't a Steam friend, in which case Steam won't share their presence.</summary>
         internal static bool TryRead(ulong steamId, string key, out string value)
         {
-            object id = Activator.CreateInstance(SteamIdType);
-            SteamIdValue.SetValue(id, steamId);
-            object friend = NewFriend.Invoke(new[] { id });
+            object friend = NewFriend.Invoke(new[] { ToSteamId(steamId) });
             value = null;
             if (!(bool)FriendIsFriend.GetValue(friend))
             {
@@ -349,8 +391,10 @@ namespace GloomSpeed
         private static readonly Dictionary<int, string> Known = new Dictionary<int, string>();
         private static string _published;
         private static string _warning = string.Empty;
+        private static bool _mismatch;
         private static float _nextPoll;
-        private static GUIStyle _style;
+        private const string WarningId = "GloomSpeedWarning";
+        private static string _shownWarning = string.Empty;
         private static bool _dead;
 
         /// <summary>One entry per player in the session, for the multiplayer menu.</summary>
@@ -369,6 +413,7 @@ namespace GloomSpeed
                 if (SteamApi.IsValid)
                 {
                     Publish();
+                    SessionStatus.Exchange(Current());
                 }
                 Refresh();
             }
@@ -378,6 +423,7 @@ namespace GloomSpeed
                 _warning = string.Empty;
                 MenuRows.Clear();
                 MultiplayerMenuStatusPatch.Refresh();
+                ShowWarning(string.Empty);
                 Plugin.Log.LogError("Presence status stopped: " + e);
             }
         }
@@ -389,19 +435,24 @@ namespace GloomSpeed
             Tick();
         }
 
-        internal static void Draw()
+        /// <summary>Shows the warning in the game's own notification panel, only when its text changes.</summary>
+        private static void ShowWarning(string text)
         {
-            if (_warning.Length == 0 || !Cfg.PresenceOverlay.Value)
+            if (text == _shownWarning)
             {
                 return;
             }
-            if (_style == null)
+            var manager = Singleton<UINotificationManager>.Instance;
+            if (manager == null)
             {
-                _style = new GUIStyle(GUI.skin.box) { alignment = TextAnchor.UpperLeft, fontSize = 13, wordWrap = false };
+                return;
             }
-            var content = new GUIContent(_warning);
-            var size = _style.CalcSize(content);
-            GUI.Box(new Rect(8, 8, size.x, size.y), content, _style);
+            manager.HideNotification(WarningId, instant: true);
+            if (text.Length > 0 && Cfg.PresenceOverlay.Value)
+            {
+                manager.ShowPermanentNotification(WarningId, "GUI_MULTIPLAYER", text);
+            }
+            _shownWarning = text;
         }
 
         private static string Current()
@@ -428,6 +479,7 @@ namespace GloomSpeed
             if (!FFSNetwork.IsOnline)
             {
                 _warning = string.Empty;
+                ShowWarning(string.Empty);
                 MenuRows.Clear();
                 Known.Clear();
                 MultiplayerMenuStatusPatch.Refresh();
@@ -436,6 +488,7 @@ namespace GloomSpeed
 
             string[] mine = Current().Split(';');
             var problems = new List<string>();
+            _mismatch = false;
             MenuRows.Clear();
             foreach (var player in PlayerRegistry.AllPlayers.OrderBy(p => p.PlayerID))
             {
@@ -453,8 +506,9 @@ namespace GloomSpeed
 
             _warning = problems.Count == 0
                 ? string.Empty
-                : "GloomSpeed: settings don't match\n" + string.Join("\n", problems);
+                : (_mismatch ? "GloomSpeed settings don't match:\n" : "Can't confirm everyone's GloomSpeed settings:\n") + string.Join("\n", problems);
             MultiplayerMenuStatusPatch.Refresh();
+            ShowWarning(_warning);
         }
 
         private static string Describe(NetworkPlayer player, string[] mine, List<string> problems)
@@ -464,9 +518,10 @@ namespace GloomSpeed
                 problems.Add(player.Username + ": can't check, not on Steam");
                 return CantDetermine;
             }
-            if (!SteamApi.TryRead(id, Key, out string value))
+            string value = SessionStatus.Get(id);
+            if (value == null && !SteamApi.TryRead(id, Key, out value))
             {
-                problems.Add(player.Username + ": can't check, not a Steam friend");
+                problems.Add(player.Username + ": mod not detected");
                 return CantDetermine;
             }
             if (value == null)
@@ -482,10 +537,12 @@ namespace GloomSpeed
             }
             if (theirs[0] != mine[0])
             {
+                _mismatch = true;
                 problems.Add($"{player.Username}: mod v{theirs[0]}, you have v{mine[0]}");
             }
             if (theirs[1] != mine[1])
             {
+                _mismatch = true;
                 problems.Add($"{player.Username}: {theirs[1]}, you're on {mine[1]}");
             }
             return Format(theirs);
@@ -502,7 +559,7 @@ namespace GloomSpeed
     /// and character rows. The copies are made under an inactive parent and stripped there, so none of the
     /// game's logic in them ever runs. Only their drawing and layout parts reach the real menu.
     /// </summary>
-    [HarmonyPatch(typeof(UIMultiplayerEscSubmenu), nameof(UIMultiplayerEscSubmenu.Show))]
+    [HarmonyPatch(typeof(UIMultiplayerEscSubmenu), "OnShown")]
     internal static class MultiplayerMenuStatusPatch
     {
         private const string RolesHeadingKey = "GUI_MULTIPLAYER_PARTY";
@@ -549,9 +606,19 @@ namespace GloomSpeed
         {
             try
             {
-                if (_heading == null)
+                // Hosts and clients each see their own container in this menu, with its own Roles rows, and
+                // the game's roster only lists the host's. So the section follows the rows on screen.
+                var visible = __instance.GetComponentsInChildren<UIMultiplayerMerchantSlot>(false);
+                var slots = visible.Length > 0 ? visible.ToList() : RosterSlots(Roster(__instance));
+                var list = slots[0].transform.parent;
+                if (_heading == null || _list != list)
                 {
-                    Build(__instance);
+                    Remove();
+                    Build(slots.Where(slot => slot.transform.parent == list).ToList(), list);
+                }
+                if (Cfg.UiDebugLog.Value)
+                {
+                    LogShown(__instance);
                 }
                 PresenceStatus.PollSoon();
                 Refresh();
@@ -562,12 +629,38 @@ namespace GloomSpeed
             }
         }
 
-        private static void Build(UIMultiplayerEscSubmenu menu)
+        private static void Remove()
+        {
+            if (_heading != null)
+            {
+                UnityEngine.Object.Destroy(_heading);
+            }
+            foreach (var row in Rows)
+            {
+                if (row.Root != null)
+                {
+                    UnityEngine.Object.Destroy(row.Root);
+                }
+            }
+            Rows.Clear();
+            _heading = null;
+        }
+
+        private static void LogShown(UIMultiplayerEscSubmenu menu)
+        {
+            var path = new System.Text.StringBuilder();
+            for (Transform node = _list; node != null; node = node.parent)
+            {
+                path.Append(" < ").Append(node.name).Append(node.gameObject.activeSelf ? " on" : " off");
+            }
+            Plugin.Log.LogInfo($"Multiplayer menu shown: {Resources.FindObjectsOfTypeAll<UIMultiplayerEscSubmenu>().Length} menus, "
+                + $"this one {menu.GetInstanceID()}, list visible {_list != null && _list.gameObject.activeInHierarchy}, path{path}");
+        }
+
+        private static void Build(List<UIMultiplayerMerchantSlot> slots, Transform list)
         {
             // The roster component sits on the whole Multiplayer window, so copy its parts, not it: the
             // header and rows are children of the list that also holds End Session and the other buttons.
-            var slots = RosterSlots(Roster(menu));
-            var list = slots[0].transform.parent;
             var heading = list.GetComponentsInChildren<TextLocalizedListener>(true)
                 .FirstOrDefault(text => HeadingKey(text) == RolesHeadingKey);
             if (heading == null)
@@ -610,6 +703,7 @@ namespace GloomSpeed
                 }
 
                 // The list has a fixed height, so without this the new rows couldn't scroll into view.
+                KeepTopEdge((RectTransform)list);
                 var fitter = list.GetComponent<ContentSizeFitter>() ?? list.gameObject.AddComponent<ContentSizeFitter>();
                 fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
@@ -626,12 +720,23 @@ namespace GloomSpeed
             }
         }
 
+        /// <summary>The client's list is centred, so once it fits its rows it would slide down from the top.</summary>
+        private static void KeepTopEdge(RectTransform list)
+        {
+            var corners = new Vector3[4];
+            list.GetWorldCorners(corners);
+            float top = corners[1].y;
+            list.pivot = new Vector2(list.pivot.x, 1f);
+            list.GetWorldCorners(corners);
+            list.position += Vector3.up * (top - corners[1].y);
+        }
+
         /// <summary>
         /// Leaves only what draws and lays out the copy, removed while it's inactive so nothing ever runs.
         /// A row holds buttons, tooltips and services that act on the real session. The player line keeps
         /// its own parts, because MultiplayerUserState needs them to show a player.
         /// </summary>
-        private static void StripToVisuals(GameObject root, List<Transform> keepInside)
+        internal static void StripToVisuals(GameObject root, List<Transform> keepInside)
         {
             foreach (var component in root.GetComponentsInChildren<Component>(true).Reverse())
             {
@@ -721,10 +826,22 @@ namespace GloomSpeed
             // Otherwise the new rows can overlap Roles until something else refreshes the menu.
             LayoutRebuilder.ForceRebuildLayoutImmediate(_list);
 
-            if (_dumpPending && players.Count > 0)
+            // Only once the menu is on screen: the layout hasn't been worked out before then.
+            if (_dumpPending && players.Count > 0 && _list.gameObject.activeInHierarchy)
             {
                 _dumpPending = false;
                 var dump = new System.Text.StringBuilder("Menu layout:\n");
+                for (var parent = _list.parent; parent != null; parent = parent.parent)
+                {
+                    var parentRect = parent as RectTransform;
+                    var parentGroup = parent.GetComponent<CanvasGroup>();
+                    dump.Append("parent ").Append(parent.name)
+                        .Append(parentRect != null ? " size=" + parentRect.rect.size + " pos=" + parentRect.anchoredPosition : "")
+                        .Append(parentGroup != null ? " alpha=" + parentGroup.alpha : "")
+                        .Append(parent.GetComponent<RectMask2D>() != null || parent.GetComponent<Mask>() != null ? " mask" : "")
+                        .Append(parent.GetComponent<ScrollRect>() != null ? " scroll" : "")
+                        .Append('\n');
+                }
                 Dump(_list, 0, dump);
                 Plugin.Log.LogInfo(dump.ToString());
             }

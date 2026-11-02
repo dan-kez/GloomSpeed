@@ -22,6 +22,7 @@
 !/mod/install/THIRD-PARTY-NOTICES.txt
 !/mod/install/windows/
 !/mod/install/macos/
+!/mod/install/linux/
 !/mod/test/
 /mod/test/*
 !/mod/test/tools/

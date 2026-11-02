@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Builds the release zips in dist/. Run after `dotnet build -c Release` in mod/GloomSpeed.
 
-  GloomSpeed-<v>-Windows.zip    BepInEx + plugin, laid out to unzip into the game folder
-  GloomSpeed-<v>-macOS.zip      same for macOS
-  GloomSpeed-<v>-Update.zip     only BepInEx/plugins/GloomSpeed.dll, for any OS
-  GloomSpeed-<v>-Installer.zip  scripted install; downloads BepInEx itself
+  GloomSpeed-<v>-Install-Windows.zip  double-click installer; downloads BepInEx itself
+  GloomSpeed-<v>-Install-macOS.zip    same for macOS. A zip because it's what keeps the scripts executable
+  GloomSpeed-<v>-Install-Linux.zip    same for Proton on Linux
+  GloomSpeed-<v>-Manual-Windows.zip   BepInEx + plugin, laid out to unzip into the game folder
+  GloomSpeed-<v>-Manual-macOS.zip     same for macOS
+  GloomSpeed-<v>-Manual-Update.zip    only BepInEx/plugins/GloomSpeed.dll, for any OS
 """
 import hashlib
 import pathlib
@@ -55,18 +57,18 @@ def main():
     DIST.mkdir(exist_ok=True)
 
     for platform, (bepinex, sha) in BEPINEX.items():
-        full_zip(DIST / f'GloomSpeed-{version}-{platform}.zip', bepinex, sha)
+        full_zip(DIST / f'GloomSpeed-{version}-Manual-{platform}.zip', bepinex, sha)
 
-    with zipfile.ZipFile(DIST / f'GloomSpeed-{version}-Update.zip', 'w') as out:
+    with zipfile.ZipFile(DIST / f'GloomSpeed-{version}-Manual-Update.zip', 'w') as out:
         add(out, PLUGIN_PATH, PLUGIN.read_bytes())
 
-    folder = f'GloomSpeed-{version}-Installer'
-    with zipfile.ZipFile(DIST / f'{folder}.zip', 'w') as out:
-        add(out, f'{folder}/GloomSpeed.dll', PLUGIN.read_bytes())
-        add(out, f'{folder}/INSTALL.md', (ROOT / 'INSTALL.md').read_bytes())
-        for script in sorted((MOD / 'install/windows').iterdir()):
-            add(out, f'{folder}/{script.name}', script.read_bytes())
-        add(out, f'{folder}/macos.sh', (MOD / 'install/macos/macos.sh').read_bytes(), True)
+    for platform, executable in (('Windows', False), ('macOS', True), ('Linux', True)):
+        folder = f'GloomSpeed-{version}-Install-{platform}'
+        with zipfile.ZipFile(DIST / f'{folder}.zip', 'w') as out:
+            add(out, f'{folder}/GloomSpeed.dll', PLUGIN.read_bytes())
+            add(out, f'{folder}/INSTALL.md', (ROOT / 'INSTALL.md').read_bytes())
+            for script in sorted((MOD / 'install' / platform.lower()).iterdir()):
+                add(out, f'{folder}/{script.name}', script.read_bytes(), executable)
 
     for built in sorted(DIST.glob(f'GloomSpeed-{version}-*.zip')):
         print(built.name, built.stat().st_size)

@@ -2,9 +2,9 @@
 
 BepInEx 5 plugin that shortens presentation delays in Gloomhaven (Steam, Windows build, Unity 2021.3.5 Mono).
 
-**Prototype.** 0.1.0 passed solo testing under Proton (`../test/REPORT.md`). The 0.3.0 settings rows and multiplayer section were checked solo under Proton and by hand on macOS (`GH_OSX.app`, Intel-only under Rosetta). One macOS run on an earlier 0.3.0 build ended in a WindowServer watchdog panic, cause unknown. Nothing has been tested with another player or on real Windows. This exact build's removal of the speed key hasn't been run in-game.
+**Prototype.** 0.1.0 passed solo testing under Proton (`../test/REPORT.md`). 0.3.1 was tested between a Proton host and a Mac client (`GH_OSX.app`, Intel-only under Rosetta), with no full scenario or larger group. One macOS run on an earlier 0.3.0 build ended in a WindowServer watchdog panic, cause unknown. Nothing has run on real Windows.
 
-It changes pacing on the machine it runs on. It sends no game network messages, skips no acknowledgements, and does not touch rule code or random numbers. The host still waits for the slowest client, so everyone needs it for the full benefit. A mixed group should work, but that is untested too.
+It changes pacing on the machine it runs on, and skips no acknowledgements. It doesn't touch rule code or random numbers. It adds two things outside pacing: a fix for the loading notice the game can lose at scenario entry and exit (always on, `LoadingNotice*Patch` in `src/Startup.cs`), and its own status messages between players over Steam P2P (channel 7219, `src/SessionStatus.cs`), which carry the mod version and speed and let the host share its speed for the session. The host still waits for the slowest client, so everyone needs it for the full benefit. A mixed group should work, but that is untested.
 
 ## Build
 
@@ -28,7 +28,7 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
    Without this, Wine uses its own `winhttp` and BepInEx never loads. Windows players skip this step.
 4. Start the game once and quit. `BepInEx/plugins` and `BepInEx/config` should now exist. If not, check step 3.
 5. Copy `GloomSpeed.dll` to `BepInEx/plugins/`.
-6. Start the game and check `BepInEx/LogOutput.log` for `GloomSpeed patches applied: 17, failed: 0` and `GloomSpeed diagnostic patches applied: 6, failed: 0`.
+6. Start the game and check `BepInEx/LogOutput.log` for `GloomSpeed patches applied: 18, failed: 0`, `GloomSpeed diagnostic patches applied: 6, failed: 0` and `GloomSpeed fix patches applied: 2, failed: 0`.
 
 ## Config
 

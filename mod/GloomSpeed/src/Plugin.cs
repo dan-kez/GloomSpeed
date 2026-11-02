@@ -14,7 +14,7 @@ namespace GloomSpeed
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.kez.gloomspeed";
-        public const string Version = "0.3.0";
+        public const string Version = "0.3.1";
         public const string RepoUrl = "https://github.com/dan-kez/gloomspeed";
 
         internal static ManualLogSource Log;
@@ -37,6 +37,14 @@ namespace GloomSpeed
                 typeof(AckRoundClientPatch),
             });
             Log.LogInfo($"GloomSpeed diagnostic patches applied: {ackOk}, failed: {ackFailed}.");
+
+            // A bug fix, not a pacing change, so it stays on with General.Enabled off.
+            var (fixOk, fixFailed) = Apply(harmony, new[]
+            {
+                typeof(LoadingNoticeRememberPatch),
+                typeof(LoadingNoticeRestorePatch),
+            });
+            Log.LogInfo($"GloomSpeed fix patches applied: {fixOk}, failed: {fixFailed}.");
 
             if (!Cfg.Enabled.Value)
             {
@@ -62,6 +70,7 @@ namespace GloomSpeed
                 typeof(SettingsRowPatch),
                 typeof(SkipIntroPatch),
                 typeof(SkipEpicLoginPatch),
+                typeof(HideDlcPromotionPatch),
                 typeof(MultiplayerMenuStatusPatch),
             });
             Cfg.Preset.SettingChanged += (_, _) => Presets.ApplyLive();
@@ -101,11 +110,6 @@ namespace GloomSpeed
             PresenceStatus.Tick();
         }
 
-        private void OnGUI()
-        {
-            PresenceStatus.Draw();
-        }
-
         private void OnApplicationQuit()
         {
             AckLog.Shutdown();
@@ -116,8 +120,10 @@ namespace GloomSpeed
     {
         internal static ConfigEntry<bool> Enabled;
         internal static ConfigEntry<SpeedPreset> Preset;
+        internal static ConfigEntry<bool> ShareSpeed;
         internal static ConfigEntry<bool> SkipIntro;
         internal static ConfigEntry<bool> SkipEpicLogin;
+        internal static ConfigEntry<bool> HideDlcPromotion;
         internal static ConfigEntry<float> Multiplier;
         internal static ConfigEntry<float> EnemyTurnMultiplier;
         internal static ConfigEntry<bool> KeepSpeedAtEndOfTurn;
@@ -142,10 +148,14 @@ namespace GloomSpeed
             Preset = c.Bind("General", "Preset", SpeedPreset.Fastest,
                 "Normal, FastForward, Faster or Fastest. Also changed from Options > General in the game, which applies immediately. The Speed values below and the attack reveal scale tune Fastest; the other Pacing values apply to Faster too.");
 
+            ShareSpeed = c.Bind("General", "ShareSpeed", true,
+                "As host, set every modded player's Game Speed to yours for the session, so nobody holds the group up. Their saved choice is kept. Also changed from Options > General.");
             SkipIntro = c.Bind("Startup", "SkipIntro", false,
                 "Skip the intro video and logos when the game starts. Also changed from Options > General. Takes effect on the next launch.");
             SkipEpicLogin = c.Bind("Startup", "SkipEpicLogin", false,
                 "Don't open the Epic account login window when no Epic login is saved. Epic features, such as Epic friends and invites, stay unavailable. Also changed from Options > General. Takes effect on the next launch.");
+            HideDlcPromotion = c.Bind("Startup", "HideDlcPromotion", false,
+                "Hide the DLC promotion in the top right of the main menu. Also changed from Options > General.");
 
             var range = new AcceptableValueRange<float>(1f, 16f);
             Multiplier = c.Bind("Speed", "Multiplier", 5f,
@@ -184,7 +194,7 @@ namespace GloomSpeed
             UiDebugLog = c.Bind("Diagnostics", "UiDebugLog", false,
                 "Write the multiplayer menu's layout to BepInEx/LogOutput.log once per run, for fixing UI problems.");
             PresenceOverlay = c.Bind("Diagnostics", "PresenceOverlay", true,
-                "During multiplayer, show an on-screen warning if another player's mod version or Game Speed differs, or their mod can't be detected.");
+                "During multiplayer, show a notification if another player's mod version or Game Speed differs, or their mod can't be detected.");
         }
     }
 }

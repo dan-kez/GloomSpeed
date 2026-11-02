@@ -10,15 +10,17 @@ A BepInEx mod that shortens presentation delays in Gloomhaven (Steam, Unity 2021
 
 ## Install
 
-**[Follow the install guide for Windows and macOS.](INSTALL.md)** You don't need anything else in this repository. Downloads are on the [Releases page](https://github.com/dan-kez/gloomspeed/releases).
+Download the installer for your computer:
 
-| | Windows | macOS |
-|---|---|---|
-| Install | Unzip into the game folder | Unzip into the game folder, run a few Terminal commands, and paste one Steam launch option |
-| Update | Unzip the update into the game folder | Replace one file |
-| Remove | Delete the files it added | Delete the files it added and clear the launch option |
+| Your computer | Download |
+|---|---|
+| **Mac** | [`GloomSpeed-0.3.1-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.1/GloomSpeed-0.3.1-Install-macOS.zip) |
+| **Windows** | [`GloomSpeed-0.3.1-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.1/GloomSpeed-0.3.1-Install-Windows.zip) |
+| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.1-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.1/GloomSpeed-0.3.1-Install-Linux.zip) |
 
-Nothing downloads in the background on this path, and it doesn't change your saves or mark them as modded. A one-step scripted installer is also available.
+Unzip it and double-click the installer inside. **[The install guide](INSTALL.md) walks through every step** and assumes you've never installed a mod. Your computer may show a security warning the first time, and the guide covers what to click. On a Mac you also paste one line into Steam, and the installer copies it for you. If you'd rather not run a script, the guide also covers [installing by hand](INSTALL.md#install-by-hand).
+
+It doesn't change your saves or mark them as modded, and you can remove it at any time.
 
 **Everyone in your group should install it.** The host waits for the slowest player, so one player without it can hold up the group.
 
@@ -26,16 +28,23 @@ Nothing downloads in the background on this path, and it doesn't change your sav
 
 In the game, under **Options > General**:
 
+![The General settings tab with the GloomSpeed rows](docs/media/settings-general.png)
+
 | Setting | What it does |
 |---|---|
 | **Game Speed** | **Normal**, **Fast Forward** (the game's own), **Faster** (the same speed, without enemy banners and other fixed delays), or **Fastest** (the default: 5x, 6x on enemy turns, plus shorter reveals). Applies immediately, and replaces the game's Auto Fast Forward row. |
+| **Share Speed With Players** | On by default. When you host, other players follow your speed until the session ends. Their own choice is kept. |
 | **Skip Intro Logos** | Skips the startup video and logos. Off by default. |
 | **Skip Epic Login** | Stops the Epic sign-in window opening at startup. Off by default. Epic friends and invites stay unavailable, but Steam multiplayer doesn't need them. |
+| **Hide DLC Promotion** | Hides the DLC advert at the top right of the main menu. Off by default. |
 
 During multiplayer:
 
+![The GloomSpeed section in the Multiplayer menu](docs/media/multiplayer-section.png)
+
 - A **GloomSpeed** section in the in-game **Multiplayer** menu lists each player's mod version and Game Speed.
-- A warning appears on screen if someone's version or speed differs, or their status can't be read. Steam only shares this between friends.
+- A notice appears at the top right if someone's version or speed differs, or their status can't be read.
+- It fixes a game bug where a player could stay stuck on "Waiting for other players..." when a scenario starts. Every player needs this version for that to help them.
 - The host's game can write a log of how long each player takes to finish each step, in `BepInEx/GloomSpeed`. It's stored locally, includes player names, and isn't uploaded.
 
 The game's Skip Attack key no longer changes speed.
@@ -46,16 +55,17 @@ The game's Skip Attack key no longer changes speed.
 
 | | Status |
 |---|---|
-| Linux (Proton) | Played solo |
-| macOS | Played solo on one Mac. One run on an earlier build ended in a system crash, cause unknown ([details below](#known-issues)) |
-| Windows | Not yet run on a real PC |
-| Multiplayer | Hosted solo only, so not yet tested with another player. The main risk is desyncs |
+| Linux (Proton) | Played solo, and hosted multiplayer |
+| macOS | Played solo, and joined multiplayer as a client. One run on an earlier build ended in a system crash, cause unknown ([details below](#known-issues)) |
+| Windows | Not yet run on a real PC, including the installer |
+| Multiplayer | Tested between one Linux host and one Mac, with enemy phases at full speed and no desyncs. Sessions with more players, and full scenarios, haven't been tested. How much time it saves in multiplayer hasn't been measured |
 
-It changes pacing only. It doesn't touch rule code, skip acknowledgements or send game network messages, but that hasn't been proven in a session with other players yet. Consider trying a throwaway campaign first.
+It changes pacing only and doesn't touch rule code or skip acknowledgements. It adds its own small status messages between players, separate from the game's network traffic. Consider trying a throwaway campaign first.
 
 ### Known issues
 
-- **macOS crash:** a Mac froze after opening the General tab, then restarted when its display service (WindowServer) stopped responding. It hasn't been retested on a Mac since, and the cause is unknown, so the mod can't be ruled out.
+- **macOS crash:** a Mac froze after opening the General tab, then restarted when its display service (WindowServer) stopped responding. It didn't happen again in later testing on newer builds, but the cause is unknown, so the mod can't be ruled out.
+- **Stuck on "Waiting for other players...":** the fix is proven when a scenario starts. Returning to the map has the same risk, but the bug hasn't occurred there since the fix went in, so the fix is unproven on that path.
 - **Faster and Fastest on attacks:** attack sequences gain little, and can take slightly longer when damage prompts are answered quickly.
 - **Scrollbar:** the multiplayer menu gains a scrollbar when the GloomSpeed section appears, which narrows its rows slightly.
 
@@ -64,9 +74,9 @@ Please [open an issue](https://github.com/dan-kez/gloomspeed/issues) if you hit 
 ## What's in this repository
 
 - `mod/GloomSpeed/`: the plugin. Its README covers building, installing and config.
-- `mod/install/windows/` and `mod/install/macos/`: the player installers.
+- `mod/install/windows/`, `mod/install/macos/` and `mod/install/linux/`: the installers for players.
 - `mod/install/package.py`: builds the release zips.
-- `mod/install/gloomspeed.sh`: reversible install, uninstall and update for Proton on Linux.
+- `mod/install/gloomspeed.sh`: developer install, uninstall and update for Proton on Linux, using a local build.
 - `mod/tools/`: patch target verifier and asset dumper.
 - `mod/REPORT.md`: how Fast Forward and multiplayer acknowledgements work.
 - `baseline/`: solo enemy-turn measurements and analysis tools.

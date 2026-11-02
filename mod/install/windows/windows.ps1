@@ -1,4 +1,4 @@
-# GloomSpeed installer for Windows. Run through "Windows - Install.bat" or "Windows - Uninstall.bat".
+# GloomSpeed installer for Windows. Run through "GloomSpeed install - Windows.bat" or "GloomSpeed uninstall - Windows.bat".
 param(
     [ValidateSet('install', 'uninstall')] [string] $Action = 'install',
     [string] $GameDir = '',
@@ -66,7 +66,7 @@ $docs = [Environment]::GetFolderPath('MyDocuments')
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 
 if ($Action -eq 'uninstall') {
-    if (-not (Test-Path $record)) { throw 'GloomSpeed is not installed in this folder.' }
+    if (-not (Test-Path $record)) { throw "This installer didn't install GloomSpeed here. If you installed it by hand, follow the Remove steps in the install guide." }
     $logs = Join-Path $bepinex 'GloomSpeed'
     if (Test-Path $logs) {
         $keep = Join-Path $docs "GloomSpeed-logs-$stamp"
@@ -88,9 +88,9 @@ if ($Action -eq 'uninstall') {
 $dll = Join-Path $Here 'GloomSpeed.dll'
 if (-not (Test-Path $dll)) { throw 'GloomSpeed.dll is missing. Unzip the whole package first, then run this from the unzipped folder.' }
 
-if (Test-Path $record) {
+if ((Test-Path $record) -or (Test-Path (Join-Path $plugins 'GloomSpeed.dll'))) {
     Copy-Item -Force $dll (Join-Path $plugins 'GloomSpeed.dll')
-    Write-Host 'GloomSpeed was already installed, so its DLL has been updated.'
+    Write-Host 'GloomSpeed was already installed, so it has been updated. Your settings are kept.'
     Show-Check $GameDir
     exit 0
 }
@@ -137,4 +137,4 @@ try {
 
 Write-Host ''
 Write-Host 'Installed. Start Gloomhaven from Steam as usual, no launch options needed.'
-Write-Host 'To check it worked: reach the main menu, quit, and run this installer again.'
+Write-Host 'To check it worked, open Options > General in the game and look for Game Speed.'

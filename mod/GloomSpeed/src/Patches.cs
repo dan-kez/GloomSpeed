@@ -91,7 +91,7 @@ namespace GloomSpeed
             {
                 return true;
             }
-            if (global::InputManager.GetWasPressed(KeyAction.SKIP_ATTACK))
+            if (global::InputManager.GetWasPressed(KeyAction.SKIP_ATTACK) || Presets.HostControlled)
             {
                 return false;
             }
