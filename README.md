@@ -55,7 +55,7 @@ It changes pacing only. It doesn't touch rule code, skip acknowledgements or sen
 
 ### Known issues
 
-- **macOS crash:** a Mac froze after opening the General tab, then restarted when its display service (WindowServer) stopped responding. No later run has reproduced it, and the cause is unknown, so the mod can't be ruled out.
+- **macOS crash:** a Mac froze after opening the General tab, then restarted when its display service (WindowServer) stopped responding. It hasn't been retested on a Mac since, and the cause is unknown, so the mod can't be ruled out.
 - **Faster and Fastest on attacks:** attack sequences gain little, and can take slightly longer when damage prompts are answered quickly.
 - **Scrollbar:** the multiplayer menu gains a scrollbar when the GloomSpeed section appears, which narrows its rows slightly.
 
