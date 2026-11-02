@@ -1,73 +1,108 @@
 # Install GloomSpeed
 
-GloomSpeed makes Gloomhaven's animations and enemy turns faster. It changes pacing only, not the rules, and it never changes your saves. It can be completely removed. The installer backs up your saves first anyway.
+GloomSpeed makes Gloomhaven's animations and enemy turns faster. It changes pacing only, not the rules, and it doesn't change your saves. Removing it is just deleting the files it added.
 
 **Everyone in your group should install it.** The host waits for the slowest player, so one player without it can hold up the group.
 
 > **This is an early test version.** It has only been run on Linux, in solo play. Nothing has been run on a real Windows PC or Mac, or in multiplayer. On Mac, some features may be missing, and the mod might not load at all. Expect rough edges, and tell Kez what happens.
 
+**The manual steps below don't run any scripts or download anything in the background.** The zip contains everything: the mod and [BepInEx](https://github.com/BepInEx/BepInEx), a standard mod loader. All you do is unzip it into your game folder.
+
 ## Before you start
 
 1. Close Gloomhaven.
-2. Make sure everyone is on the same game version: let Steam finish any Gloomhaven updates.
-3. Download **GloomSpeed-0.2.0.zip** from the [Releases page](https://github.com/dan-kez/gloomspeed/releases), or get it directly from Kez.
-4. Unzip it. Don't run anything from inside the zip.
-
-Then follow the steps for your computer.
+2. Let Steam finish any Gloomhaven updates. Everyone must be on the same game version.
+3. **Optional but sensible:** copy your saves somewhere safe.
+   - **Windows:** `%USERPROFILE%\AppData\LocalLow\FlamingFowlStudios\Gloomhaven\GloomSaves`
+   - **macOS:** `~/Library/Application Support/FlamingFowlStudios/Gloomhaven/GloomSaves`
+4. Find your game folder: in Steam, right-click **Gloomhaven** > **Manage** > **Browse local files**.
+5. Download the zip for your computer from the [Releases page](https://github.com/dan-kez/gloomspeed/releases), or get it from Kez.
 
 ---
 
 ## Windows
 
-**Install**
+### Install
 
-1. Open the unzipped `GloomSpeed-0.2.0` folder.
-2. Double-click **`Windows - Install.bat`**.
-   - If you see "Windows protected your PC", click **More info**, then **Run anyway**.
-3. When it says **Installed**, press any key to close the window.
-4. Start Gloomhaven from Steam as normal.
+1. Download **`GloomSpeed-0.2.0-Windows.zip`**.
+2. Right-click the zip and choose **Extract All...**
+3. Set the destination to your **game folder**, the one containing `GH.exe`, and click **Extract**. To get the path, click the address bar of the game folder window and copy it.
+4. Check that `winhttp.dll` and a `BepInEx` folder are now right next to `GH.exe`. If they ended up inside a new `GloomSpeed` folder, move them out.
+5. Start Gloomhaven from Steam as normal. No launch options are needed.
 
-**Check it worked**
+### Check it worked
 
-1. Reach the main menu, then quit the game.
-2. Double-click **`Windows - Install.bat`** again. It should show:
-   ```
-   GloomSpeed patches applied: 12, failed: 0.
-   ```
+Reach the main menu and quit. Open `BepInEx\LogOutput.log` from your game folder in Notepad. It should contain:
 
-**Remove it**
+```
+GloomSpeed patches applied: 12, failed: 0.
+```
 
-Close the game and double-click **`Windows - Uninstall.bat`**.
+If there's no `LogOutput.log`, the mod loader didn't start. Check step 4.
+
+### Update
+
+1. Close the game and download **`GloomSpeed-<version>-Update.zip`**.
+2. Extract it into your **game folder** in the same way, and choose **Replace** if asked.
+
+Your settings are kept. The update only contains `BepInEx\plugins\GloomSpeed.dll`.
+
+### Remove
+
+Close the game and delete these from your game folder:
+
+- the `BepInEx` folder
+- `winhttp.dll`
+- `doorstop_config.ini`
+- `.doorstop_version`
+- `changelog.txt`
 
 ---
 
 ## macOS
 
-**Install**
+This takes a few Terminal commands, because macOS blocks downloaded mod files until you allow them.
 
-1. Open **Terminal** (press Cmd+Space, type `Terminal`, press Return).
-2. Type `bash` and then a **space**. Don't press Return yet.
-3. In Finder, open the unzipped `GloomSpeed-0.2.0` folder and drag **`macos.sh`** into the Terminal window.
-4. Type a **space** and then `install`, so it looks something like this, then press Return:
+### Install
+
+1. Download **`GloomSpeed-0.2.0-macOS.zip`** and double-click it. This creates a folder of files.
+2. Open that folder and your **game folder** side by side in Finder.
+3. Move everything from the unzipped folder into the game folder, so that `run_bepinex.sh` and the `BepInEx` folder sit next to the game's `.app`.
+4. Open **Terminal** (press Cmd+Space, type `Terminal`, press Return). Type `cd` and a **space**, drag the game folder into the Terminal window, and press Return.
+5. Allow the mod files to run. Paste each line and press Return:
    ```
-   bash /Users/you/Downloads/GloomSpeed-0.2.0/macos.sh install
+   chmod u+x run_bepinex.sh
+   xattr -dr com.apple.quarantine run_bepinex.sh libdoorstop.dylib BepInEx
    ```
-5. The installer prints a line starting with `"/Users/` and copies it to your clipboard. **You need this for the next step.**
-6. In Steam, right-click **Gloomhaven** > **Properties** > **General**, click in **Launch Options**, and paste.
-7. Start Gloomhaven from Steam as normal.
-
-**Check it worked**
-
-1. Reach the main menu, then quit the game.
-2. Run the same install command in Terminal again. It should show:
+6. Print and copy your Steam launch option:
    ```
-   GloomSpeed patches applied: 12, failed: 0.
+   printf '"%s/run_bepinex.sh" %%command%%' "$PWD" | tee /dev/tty | pbcopy
    ```
+7. In Steam, right-click **Gloomhaven** > **Properties** > **General**, click in **Launch Options**, and paste.
+8. Start Gloomhaven from Steam as normal.
 
-**Remove it**
+### Check it worked
 
-1. Close the game and run the same command with `uninstall` instead of `install`.
-2. In Steam, clear **Launch Options** for Gloomhaven. The game won't start properly until you do.
+Reach the main menu and quit. Open `BepInEx/LogOutput.log` from your game folder in TextEdit. It should contain:
+
+```
+GloomSpeed patches applied: 12, failed: 0.
+```
+
+If there's no `LogOutput.log`, check the Launch Options from step 7. A line saying presence status is unavailable is expected on Mac.
+
+### Update
+
+1. Close the game, download **`GloomSpeed-<version>-Update.zip`**, and double-click it.
+2. In the unzipped folder, open `BepInEx/plugins` and find `GloomSpeed.dll`.
+3. Drag that one file into `BepInEx/plugins` in your game folder and choose **Replace**.
+
+Your settings are kept. Move only that file: dragging the whole `BepInEx` folder in Finder can replace your existing folder and lose your settings.
+
+### Remove
+
+1. Close the game and delete these from your game folder: the `BepInEx` folder, `run_bepinex.sh`, `libdoorstop.dylib` and `changelog.txt`. There's also a hidden `.doorstop_version` file if you moved it; it does nothing on its own.
+2. In Steam, clear **Launch Options** for Gloomhaven. **The game won't start properly until you do.**
 
 ---
 
@@ -75,23 +110,29 @@ Close the game and double-click **`Windows - Uninstall.bat`**.
 
 | Problem | What to do |
 |---|---|
-| The game won't start or behaves oddly | Run the uninstaller. On Mac, also clear the Launch Options. |
-| "Could not find Gloomhaven automatically" | In Steam, right-click Gloomhaven > **Manage** > **Browse local files**, then give the installer that folder. |
-| "Gloomhaven is running" | Close the game, then try again. |
+| The game won't start or behaves oddly | Follow the **Remove** steps. Your game is then back to normal. |
 | The check shows `failed:` above 0 | The mod still works, with that feature turned off. Tell Kez. |
-| Mac: "no .app found" | Your copy may not be the macOS version. Tell Kez. |
-| A desync in multiplayer | Tell Kez when it happened and send `BepInEx/LogOutput.log` from your game folder. |
-
-To undo a save problem, your backup is in your Documents folder, named `Gloomhaven-save-backup-` followed by the date.
+| No `.app` in the Mac game folder | Your copy may not be the macOS version. Tell Kez. |
+| A desync in multiplayer | Tell Kez when it happened and send `BepInEx/LogOutput.log`. |
+| A game file seems damaged | In Steam: right-click Gloomhaven > **Properties** > **Installed Files** > **Verify integrity**. This doesn't remove the mod's files. |
 
 ## After a game update
 
-A Gloomhaven update can turn off parts of the mod. Everyone should update the game and then run the installer's check again.
+A Gloomhaven update can turn off parts of the mod. Everyone should update the game and then repeat the check above.
 
-## What it does on your computer
+## Prefer a script?
 
-- Adds [BepInEx](https://github.com/BepInEx/BepInEx), a standard mod loader, to your game folder. The installer downloads it from BepInEx's official release and verifies its checksum.
-- Adds `GloomSpeed.dll`, the mod itself.
-- On Mac, also needs the Steam launch option above to start the mod loader.
-- While playing online, shares your mod version and speed settings with Steam friends so the group can see who has it.
-- If you host, writes a local log of when each player finished each step, including player names. It isn't uploaded anywhere.
+**`GloomSpeed-0.2.0-Installer.zip`** does the same job with one step, and it also backs up your saves. Unzip it first. Don't mix it with a manual install: if you've already installed by hand, remove that first.
+
+It downloads BepInEx from its official GitHub release and verifies the checksum.
+
+- **Windows:** double-click `Windows - Install.bat`. If you see "Windows protected your PC", click **More info**, then **Run anyway**. Run it again after launching the game to check it worked. Remove with `Windows - Uninstall.bat`.
+- **macOS:** in Terminal, type `bash` and a space, drag in `macos.sh`, type a space and `install`, and press Return. Then paste the Steam launch option it copies for you. Remove by running it with `uninstall`, then clear the launch option.
+
+## What it adds to your computer
+
+- BepInEx, in your game folder. Its licences and those of the libraries it includes are in `BepInEx/GloomSpeed-THIRD-PARTY-NOTICES.txt`.
+- `GloomSpeed.dll`, the mod itself, in `BepInEx/plugins`.
+- On Mac, the Steam launch option, which starts the mod loader.
+- While playing online, it shares your mod version and speed settings with Steam friends, so the group can see who has it.
+- If you host, it writes a local log in `BepInEx/GloomSpeed` of when each player finished each step, including player names. It isn't uploaded anywhere.

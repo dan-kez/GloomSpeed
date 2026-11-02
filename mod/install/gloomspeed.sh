@@ -21,7 +21,9 @@ FILELIST=$STATE/game-files.list
 die() { echo "ERROR: $*" >&2; exit 1; }
 
 require_closed() {
-	if pgrep -f 'GH\.exe' >/dev/null; then die "Gloomhaven is running; close it first"; fi
+	# Wine shows the game's Windows path as its command line. Anchored so this can't match a shell
+	# command that merely mentions the game.
+	if ps -eo args | grep -Eq '^[A-Za-z]:\\.*\\GH\.exe'; then die "Gloomhaven is running; close it first"; fi
 }
 
 # Files the game itself rewrites, so they can't be part of the integrity check

@@ -18,7 +18,8 @@
 !/mod/install/
 /mod/install/*
 !/mod/install/gloomspeed.sh
-!/mod/install/package.sh
+!/mod/install/package.py
+!/mod/install/THIRD-PARTY-NOTICES.txt
 !/mod/install/windows/
 !/mod/install/macos/
 !/mod/test/

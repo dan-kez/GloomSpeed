@@ -14,15 +14,18 @@ A BepInEx mod that shortens presentation delays in Gloomhaven (Steam, Unity 2021
 
 | | Windows | macOS |
 |---|---|---|
-| Install | Double-click `Windows - Install.bat` | Run `macos.sh install` in Terminal, then paste one Steam launch option |
-| Remove | Double-click `Windows - Uninstall.bat` | Run `macos.sh uninstall`, then clear the launch option |
+| Install | Unzip into the game folder | Unzip into the game folder, run two Terminal commands, and paste one Steam launch option |
+| Update | Unzip the update into the game folder | Replace one file |
+| Remove | Delete the files it added | Delete the files it added and clear the launch option |
 | Tested on a real computer | Not yet | Not yet |
+
+Nothing downloads in the background on this path. A one-step scripted installer is also available.
 
 ## What's in this repository
 
 - `mod/GloomSpeed/`: the plugin. Its README covers building, installing and config.
 - `mod/install/windows/` and `mod/install/macos/`: the player installers.
-- `mod/install/package.sh`: builds the release zip.
+- `mod/install/package.py`: builds the release zips.
 - `mod/install/gloomspeed.sh`: reversible install, uninstall and update for Proton on Linux.
 - `mod/tools/`: patch target verifier and asset dumper.
 - `mod/REPORT.md`: how Fast Forward and multiplayer acknowledgements work.
