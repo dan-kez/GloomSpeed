@@ -14,7 +14,7 @@ namespace GloomSpeed
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.kez.gloomspeed";
-        public const string Version = "0.3.1";
+        public const string Version = "0.3.2";
         public const string RepoUrl = "https://github.com/dan-kez/gloomspeed";
 
         internal static ManualLogSource Log;
@@ -71,6 +71,8 @@ namespace GloomSpeed
                 typeof(SkipIntroPatch),
                 typeof(SkipEpicLoginPatch),
                 typeof(HideDlcPromotionPatch),
+                typeof(QuestToastsTogetherPatch),
+                typeof(QuestToastTestProgressPatch),
                 typeof(MultiplayerMenuStatusPatch),
             });
             Cfg.Preset.SettingChanged += (_, _) => Presets.ApplyLive();
@@ -108,6 +110,7 @@ namespace GloomSpeed
         private void Update()
         {
             PresenceStatus.Tick();
+            QuestToastTest.Tick();
         }
 
         private void OnApplicationQuit()
@@ -124,6 +127,7 @@ namespace GloomSpeed
         internal static ConfigEntry<bool> SkipIntro;
         internal static ConfigEntry<bool> SkipEpicLogin;
         internal static ConfigEntry<bool> HideDlcPromotion;
+        internal static ConfigEntry<bool> QuestToastsTogether;
         internal static ConfigEntry<float> Multiplier;
         internal static ConfigEntry<float> EnemyTurnMultiplier;
         internal static ConfigEntry<bool> KeepSpeedAtEndOfTurn;
@@ -138,6 +142,7 @@ namespace GloomSpeed
         internal static ConfigEntry<bool> QuietUnityLog;
         internal static ConfigEntry<bool> QuietRuleLog;
         internal static ConfigEntry<bool> AckTimingLog;
+        internal static ConfigEntry<bool> TestQuestToasts;
         internal static ConfigEntry<bool> PresenceStatus;
         internal static ConfigEntry<bool> PresenceOverlay;
         internal static ConfigEntry<bool> UiDebugLog;
@@ -167,6 +172,8 @@ namespace GloomSpeed
             AllowClientHotkey = c.Bind("Speed", "AllowClientHotkey", true,
                 "The Toggle Speed key only works for the host online. Let clients use it too (the setting is local anyway).");
 
+            QuestToastsTogether = c.Bind("Pacing", "QuestToastsTogether", true,
+                "At Faster and Fastest, show all personal quest progress together after a scenario, rather than one at a time.");
             SkipEnemyBanner = c.Bind("Pacing", "SkipEnemyBanner", true,
                 "Skip the 'enemy turn' banner, which holds the enemy turn for 1.3s of real time and ignores Fast Forward.");
             OtherBannerTimeScale = c.Bind("Pacing", "OtherBannerTimeScale", 0.5f,
@@ -187,10 +194,12 @@ namespace GloomSpeed
             QuietRuleLog = c.Bind("Logging", "QuietRuleLog", true,
                 "Skip the rule library's Info and SimpleLog messages, including their stack trace capture on the rule thread. Errors and warnings remain.");
 
+            TestQuestToasts = c.Bind("Diagnostics", "TestQuestToasts", false,
+                "For testing: every character shows a personal quest toast after each scenario, and on the world map F9 shows four. Doesn't change quest progress.");
             AckTimingLog = c.Bind("Diagnostics", "AckTimingLog", true,
                 "As host, record when each player reaches the end of each ability, turn and round, in BepInEx/GloomSpeed. Works with General.Enabled off.");
             PresenceStatus = c.Bind("Diagnostics", "PresenceStatus", true,
-                "Share mod version and Game Speed with Steam friends through Rich Presence, and read theirs. Shown in the in-game multiplayer menu and logged to BepInEx/LogOutput.log.");
+                "Share mod version and Game Speed directly with the other players in a session, list them in the multiplayer menu, and warn if they differ. Sent over Steam P2P, separate from the game's network traffic. Nothing is added to your Steam status.");
             UiDebugLog = c.Bind("Diagnostics", "UiDebugLog", false,
                 "Write the multiplayer menu's layout to BepInEx/LogOutput.log once per run, for fixing UI problems.");
             PresenceOverlay = c.Bind("Diagnostics", "PresenceOverlay", true,

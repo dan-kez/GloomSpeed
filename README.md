@@ -14,9 +14,9 @@ Download the installer for your computer:
 
 | Your computer | Download |
 |---|---|
-| **Mac** | [`GloomSpeed-0.3.1-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.1/GloomSpeed-0.3.1-Install-macOS.zip) |
-| **Windows** | [`GloomSpeed-0.3.1-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.1/GloomSpeed-0.3.1-Install-Windows.zip) |
-| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.1-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.1/GloomSpeed-0.3.1-Install-Linux.zip) |
+| **Mac** | [`GloomSpeed-0.3.2-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.2/GloomSpeed-0.3.2-Install-macOS.zip) |
+| **Windows** | [`GloomSpeed-0.3.2-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.2/GloomSpeed-0.3.2-Install-Windows.zip) |
+| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.2-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.2/GloomSpeed-0.3.2-Install-Linux.zip) |
 
 Unzip it and double-click the installer inside. **[The install guide](INSTALL.md) walks through every step** and assumes you've never installed a mod. Your computer may show a security warning the first time, and the guide covers what to click. On a Mac you also paste one line into Steam, and the installer copies it for you. If you'd rather not run a script, the guide also covers [installing by hand](INSTALL.md#install-by-hand).
 
@@ -45,6 +45,7 @@ During multiplayer:
 - A **GloomSpeed** section in the in-game **Multiplayer** menu lists each player's mod version and Game Speed.
 - A notice appears at the top right if someone's version or speed differs, or their status can't be read.
 - It fixes a game bug where a player could stay stuck on "Waiting for other players..." when a scenario starts. Every player needs this version for that to help them.
+- At **Faster** and **Fastest**, personal quest progress after a scenario shows all at once, not one at a time.
 - The host's game can write a log of how long each player takes to finish each step, in `BepInEx/GloomSpeed`. It's stored locally, includes player names, and isn't uploaded.
 
 The game's Skip Attack key no longer changes speed.

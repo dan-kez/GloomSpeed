@@ -28,6 +28,8 @@
     <Reference Include="GH.Runtime"><HintPath>$(GameManaged)/GH.Runtime.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="GH.Runtime.FirstPass"><HintPath>$(GameManaged)/GH.Runtime.FirstPass.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="ScenarioRuleLibrary"><HintPath>$(GameManaged)/ScenarioRuleLibrary.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Unity.InputSystem"><HintPath>$(GameManaged)/Unity.InputSystem.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="MapRuleLibrary"><HintPath>$(GameManaged)/MapRuleLibrary.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="SharedLibrary"><HintPath>$(GameManaged)/SharedLibrary.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="ThirdParty"><HintPath>$(GameManaged)/ThirdParty.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine"><HintPath>$(GameManaged)/UnityEngine.dll</HintPath><Private>false</Private></Reference>

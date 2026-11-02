@@ -167,7 +167,7 @@ The scripts are plain text, and you can read them in [`mod/install`](mod/install
 
 ## What the mod shares and saves
 
-- While you're in a session, it sends your mod version and Game Speed to the other players. It also publishes them on your Steam status, which Steam friends can read.
+- While you're in a session, it sends your mod version and Game Speed to the other players. They go only to the players in your session, and nothing is added to your public Steam status.
 - If you host, it writes a local log in `BepInEx/GloomSpeed` of when each player finished each step, including player names. It isn't uploaded anywhere.
 - BepInEx's licences, and those of the libraries it includes, are in `BepInEx/GloomSpeed-THIRD-PARTY-NOTICES.txt`.
 
@@ -215,4 +215,4 @@ This one needs a few Terminal commands, which the installer otherwise runs for y
 
 ### Check a manual install
 
-The in-game check above works here too. For more detail, reach the main menu, quit, and open `BepInEx/LogOutput.log` from your game folder. It should contain `GloomSpeed patches applied: 18, failed: 0.` If the file is missing, the mod loader didn't start. If `failed:` is above 0, the mod still works with that feature off, so please open an issue.
+The in-game check above works here too. For more detail, reach the main menu, quit, and open `BepInEx/LogOutput.log` from your game folder. It should contain `GloomSpeed patches applied: 20, failed: 0.` If the file is missing, the mod loader didn't start. If `failed:` is above 0, the mod still works with that feature off, so please open an issue.

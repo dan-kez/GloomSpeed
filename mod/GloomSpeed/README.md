@@ -28,7 +28,7 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
    Without this, Wine uses its own `winhttp` and BepInEx never loads. Windows players skip this step.
 4. Start the game once and quit. `BepInEx/plugins` and `BepInEx/config` should now exist. If not, check step 3.
 5. Copy `GloomSpeed.dll` to `BepInEx/plugins/`.
-6. Start the game and check `BepInEx/LogOutput.log` for `GloomSpeed patches applied: 18, failed: 0`, `GloomSpeed diagnostic patches applied: 6, failed: 0` and `GloomSpeed fix patches applied: 2, failed: 0`.
+6. Start the game and check `BepInEx/LogOutput.log` for `GloomSpeed patches applied: 20, failed: 0`, `GloomSpeed diagnostic patches applied: 6, failed: 0` and `GloomSpeed fix patches applied: 2, failed: 0`.
 
 ## Config
 
@@ -54,6 +54,8 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
 | `Diagnostics.AckTimingLog` | true | n/a |
 | `Diagnostics.PresenceStatus` | true | n/a |
 | `Diagnostics.PresenceOverlay` | true | n/a |
+| `Diagnostics.TestQuestToasts` | false | n/a |
+| `Pacing.QuestToastsTogether` | true | n/a |
 | `Diagnostics.UiDebugLog` | false | n/a |
 | `Startup.SkipIntro` | false | false |
 | `Startup.SkipEpicLogin` | false | false |
@@ -66,7 +68,7 @@ Both work with `General.Enabled` off, so an unmodified session can be measured.
 
 **Acknowledgement timing (host only).** Other players don't need the mod. The host records when each player reaches the end of each ability, turn and round, and writes `BepInEx/GloomSpeed/acks-<time>.csv` and `acks-<time>-summary.txt`. The summary updates every 25 syncs and on exit. It lists each player's median and worst lag behind the first player to arrive, and the total time they alone made everyone wait. Arrival times are taken on the host, so they include network delay. These files contain player names. Only players controlling a hero are waited on, so anyone without one won't appear as holding the group up.
 
-**Presence status (Steam).** The library is found at runtime, so this works on Windows and macOS. Each modded player publishes `version;preset;multiplier;enemyMultiplier` through Steam Rich Presence, outside the game's network traffic. During multiplayer the mod reads other players' values, lists them in a GloomSpeed section in the in-game multiplayer menu, warns on screen if something differs, and logs changes to `BepInEx/LogOutput.log`. Steam exposes these values only for friends, so "nothing reported" doesn't prove someone lacks the mod. It can't see the game's own Fast Forward setting.
+**Session status (Steam P2P).** The library is found at runtime, so this works on Windows and macOS. Each modded player sends `version;preset;multiplier;enemyMultiplier` directly to the other players in the session over Steam P2P (channel 7219), outside the game's network traffic. It doesn't use Steam Rich Presence, so nothing appears on a player's public Steam status. The mod lists these values in a GloomSpeed section in the in-game multiplayer menu, warns on screen if something differs, and logs changes to `BepInEx/LogOutput.log`. "Nothing reported" doesn't prove someone lacks the mod, because their status can arrive late. It can't see the game's own Fast Forward setting.
 
 ## Uninstall
 

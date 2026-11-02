@@ -300,15 +300,8 @@ namespace GloomSpeed
         private static readonly PropertyInfo ClientValid =
             Library.GetType("Steamworks.SteamClient", true).GetProperty("IsValid", PublicStatic);
 
-        private static readonly MethodInfo SetPresence = Library.GetType("Steamworks.SteamFriends", true)
-            .GetMethod("SetRichPresence", PublicStatic, null, new[] { typeof(string), typeof(string) }, null);
-
         private static readonly Type SteamIdType = Library.GetType("Steamworks.SteamId", true);
         private static readonly FieldInfo SteamIdValue = SteamIdType.GetField("Value");
-        private static readonly Type FriendType = Library.GetType("Steamworks.Friend", true);
-        private static readonly ConstructorInfo NewFriend = FriendType.GetConstructor(new[] { SteamIdType });
-        private static readonly PropertyInfo FriendIsFriend = FriendType.GetProperty("IsFriend");
-        private static readonly MethodInfo FriendPresence = FriendType.GetMethod("GetRichPresence", new[] { typeof(string) });
 
         private static readonly Type NetworkingType = Library.GetType("Steamworks.SteamNetworking", true);
 
@@ -355,41 +348,22 @@ namespace GloomSpeed
         {
             CloseP2P.Invoke(null, new[] { ToSteamId(steamId) });
         }
-
-        internal static bool Publish(string key, string value)
-        {
-            return (bool)SetPresence.Invoke(null, new object[] { key, value });
-        }
-
-        /// <summary>False if they aren't a Steam friend, in which case Steam won't share their presence.</summary>
-        internal static bool TryRead(ulong steamId, string key, out string value)
-        {
-            object friend = NewFriend.Invoke(new[] { ToSteamId(steamId) });
-            value = null;
-            if (!(bool)FriendIsFriend.GetValue(friend))
-            {
-                return false;
-            }
-            value = (string)FriendPresence.Invoke(friend, new object[] { key });
-            return true;
-        }
     }
 
     /// <summary>
-    /// Shares mod version and Game Speed through Steam Rich Presence, outside the game's network traffic,
-    /// so players without the mod are unaffected. No value doesn't prove there's no mod: Steam only
-    /// exposes this for friends, and it can arrive late. The multiplayer menu always lists everyone;
+    /// Compares each player's mod version and Game Speed, sent directly between players in a session by
+    /// SessionStatus, outside the game's network traffic. No value doesn't prove there's no mod: it can
+    /// arrive late. The multiplayer menu always lists everyone;
     /// the on-screen box only appears when something doesn't line up.
     /// </summary>
     internal static class PresenceStatus
     {
-        private const string Key = "gloomspeed";
-        // Reads Steam's local copy and only publishes on a change, so polling this often costs little.
+        // Only reads what has already arrived, so polling this often costs little.
         private const float PollSeconds = 1f;
         private const string CantDetermine = "Can't determine";
 
         private static readonly Dictionary<int, string> Known = new Dictionary<int, string>();
-        private static string _published;
+        private static string _lastStatus;
         private static string _warning = string.Empty;
         private static bool _mismatch;
         private static float _nextPoll;
@@ -412,7 +386,7 @@ namespace GloomSpeed
             {
                 if (SteamApi.IsValid)
                 {
-                    Publish();
+                    LogStatus();
                     SessionStatus.Exchange(Current());
                 }
                 Refresh();
@@ -463,14 +437,13 @@ namespace GloomSpeed
                 (normal ? 1f : Presets.EnemyMultiplier).ToString("0.##", CultureInfo.InvariantCulture));
         }
 
-        private static void Publish()
+        private static void LogStatus()
         {
             string value = Current();
-            if (value != _published)
+            if (value != _lastStatus)
             {
-                bool ok = SteamApi.Publish(Key, value);
-                _published = value;
-                Plugin.Log.LogInfo($"Presence published: {value} (accepted: {ok})");
+                _lastStatus = value;
+                Plugin.Log.LogInfo("My status: " + value);
             }
         }
 
@@ -519,14 +492,9 @@ namespace GloomSpeed
                 return CantDetermine;
             }
             string value = SessionStatus.Get(id);
-            if (value == null && !SteamApi.TryRead(id, Key, out value))
-            {
-                problems.Add(player.Username + ": mod not detected");
-                return CantDetermine;
-            }
             if (value == null)
             {
-                problems.Add(player.Username + ": mod not detected, or Steam hasn't shared it yet");
+                problems.Add(player.Username + ": mod not detected, or its status hasn't arrived yet");
                 return CantDetermine;
             }
             string[] theirs = value.Split(';');

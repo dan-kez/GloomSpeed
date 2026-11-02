@@ -23,6 +23,7 @@ foreach(var t in plugin.MainModule.Types.OrderBy(t=>t.Name)){
     foreach(var p in hook.Parameters){
       if(p.Name=="__state") continue;
       if(p.Name=="__instance"){ var et=p.ParameterType; bool ok=IsAssignable(td,et); Console.WriteLine($"       {hook.Name} __instance:{et.Name} {(ok?"ok":"MISMATCH")}"); if(!ok)bad++; continue;}
+      if(p.Name=="__result"){ var rt=p.ParameterType.IsByReference?((ByReferenceType)p.ParameterType).ElementType:p.ParameterType; bool ok=rt.FullName==m.ReturnType.FullName; Console.WriteLine($"       {hook.Name} __result:{rt.Name} {(ok?"ok":"MISMATCH")}"); if(!ok)bad++; continue; }
       var tp=m.Parameters.FirstOrDefault(x=>x.Name==p.Name);
       var pt=p.ParameterType.IsByReference?((ByReferenceType)p.ParameterType).ElementType:p.ParameterType;
       bool match=tp!=null&&(tp.ParameterType.FullName==pt.FullName);
