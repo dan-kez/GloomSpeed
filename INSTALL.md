@@ -4,7 +4,7 @@ GloomSpeed makes Gloomhaven's animations and enemy turns faster. It changes paci
 
 **Everyone in your group should install it.** The host waits for the slowest player, so one player without it can hold up the group.
 
-> **This is an early test version.** It has only been run on Linux, in solo play. Nothing has been run on a real Windows PC or Mac, or in multiplayer. On Mac, some features may be missing, and the mod might not load at all. Expect rough edges, and tell Kez what happens.
+> **This is an early test version.** It has been played solo on Linux. It has loaded on one real Mac, but hasn't been played there yet. Nothing has been run on a real Windows PC or in multiplayer. Expect rough edges, and tell Kez what happens.
 
 **The manual steps below don't run any scripts or download anything in the background.** The zip contains everything: the mod and [BepInEx](https://github.com/BepInEx/BepInEx), a standard mod loader. All you do is unzip it into your game folder.
 
@@ -14,7 +14,7 @@ GloomSpeed makes Gloomhaven's animations and enemy turns faster. It changes paci
 2. Let Steam finish any Gloomhaven updates. Everyone must be on the same game version.
 3. **Optional but sensible:** copy your saves somewhere safe.
    - **Windows:** `%USERPROFILE%\AppData\LocalLow\FlamingFowlStudios\Gloomhaven\GloomSaves`
-   - **macOS:** `~/Library/Application Support/FlamingFowlStudios/Gloomhaven/GloomSaves`
+   - **macOS:** `~/Library/Application Support/unity.FlamingFowlStudios.Gloomhaven/GloomSaves`
 4. Find your game folder: in Steam, right-click **Gloomhaven** > **Manage** > **Browse local files**.
 5. Download the zip for your computer from the [Releases page](https://github.com/dan-kez/gloomspeed/releases), or get it from Kez.
 
@@ -67,7 +67,7 @@ This takes a few Terminal commands, because macOS blocks downloaded mod files un
 
 1. Download **`GloomSpeed-0.2.0-macOS.zip`** and double-click it. This creates a folder of files.
 2. Open that folder and your **game folder** side by side in Finder.
-3. Move everything from the unzipped folder into the game folder, so that `run_bepinex.sh` and the `BepInEx` folder sit next to the game's `.app`.
+3. Move everything from the unzipped folder into the game folder, so that `run_bepinex.sh` and the `BepInEx` folder sit next to `GH_OSX.app`.
 4. Open **Terminal** (press Cmd+Space, type `Terminal`, press Return). Type `cd` and a **space**, drag the game folder into the Terminal window, and press Return.
 5. Allow the mod files to run. Paste each line and press Return:
    ```
@@ -89,7 +89,7 @@ Reach the main menu and quit. Open `BepInEx/LogOutput.log` from your game folder
 GloomSpeed patches applied: 12, failed: 0.
 ```
 
-If there's no `LogOutput.log`, check the Launch Options from step 7. A line saying presence status is unavailable is expected on Mac.
+If there's no `LogOutput.log`, check the Launch Options from step 7. A warning that presence status is unavailable is expected on Mac for now: the speed changes still load, but Mac players don't share or see mod status.
 
 ### Update
 
@@ -134,5 +134,5 @@ It downloads BepInEx from its official GitHub release and verifies the checksum.
 - BepInEx, in your game folder. Its licences and those of the libraries it includes are in `BepInEx/GloomSpeed-THIRD-PARTY-NOTICES.txt`.
 - `GloomSpeed.dll`, the mod itself, in `BepInEx/plugins`.
 - On Mac, the Steam launch option, which starts the mod loader.
-- While playing online, it shares your mod version and speed settings with Steam friends, so the group can see who has it.
+- While playing online on Windows, it shares your mod version and speed settings with Steam friends, so the group can see who has it. This doesn't work on Mac yet.
 - If you host, it writes a local log in `BepInEx/GloomSpeed` of when each player finished each step, including player names. It isn't uploaded anywhere.

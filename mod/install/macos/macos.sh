@@ -8,7 +8,7 @@ BEPINEX_SHA=2e711e21f6570da964fce4654b1976500dbe043f61778bce0008500078564638
 RECORD=GloomSpeed-installed-files.txt
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 STEAM="$HOME/Library/Application Support/Steam"
-SAVES="$HOME/Library/Application Support/FlamingFowlStudios/Gloomhaven/GloomSaves"
+SAVES="$HOME/Library/Application Support/unity.FlamingFowlStudios.Gloomhaven/GloomSaves"
 STAMP=$(date +%Y%m%d-%H%M%S)
 
 die() { echo "ERROR: $*" >&2; exit 1; }

@@ -17,7 +17,7 @@ A BepInEx mod that shortens presentation delays in Gloomhaven (Steam, Unity 2021
 | Install | Unzip into the game folder | Unzip into the game folder, run two Terminal commands, and paste one Steam launch option |
 | Update | Unzip the update into the game folder | Replace one file |
 | Remove | Delete the files it added | Delete the files it added and clear the launch option |
-| Tested on a real computer | Not yet | Not yet |
+| Tested on a real computer | Not yet | Loads, not yet played |
 
 Nothing downloads in the background on this path. A one-step scripted installer is also available.
 
