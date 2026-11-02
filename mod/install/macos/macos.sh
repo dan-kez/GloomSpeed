@@ -42,7 +42,7 @@ check() {
 		echo "Result of the last game launch:"
 		grep 'GloomSpeed.*patches applied' "$log" | sed 's/^/  /'
 	else
-		echo "BepInEx ran, but GloomSpeed did not report in. Send this file to Kez:"
+		echo "BepInEx ran, but GloomSpeed did not report in. Please open an issue with this file:"
 		echo "  $log"
 	fi
 }

@@ -102,7 +102,7 @@ Unity writes the log line by line, with no bursts. Against the game's own EOS ti
 
 ## What's left changed
 - Auto Fast Forward was toggled during testing and restored to Enabled, confirmed on screen.
-- Bwehpies, Bob's Boigers, Bwehbians and Redeemers are byte-identical to the backup.
+- All other campaigns are byte-identical to the backup.
 - `GlobalData.dat` differs from the backup because the game rewrites it. The main menu's Continue may now open Baselinetest [I].
 - `user.reg`: in the game's section, only the session counter and session ID differ.
 - `Player.log` and `Player-prev.log` now hold runs 3 and 2. The originals, including the 29 Oct log, exist only in the backup.

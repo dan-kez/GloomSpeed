@@ -100,12 +100,7 @@ Each sync adds Bolt send batching (60 fps, send rate 3, so a packet about every 
 
 **What causes `:null`** [confirmed]
 
-It is a logging bug. At `Choreographer.cs:2664-2669` and `:2701-2706`:
-
-    SetChoreographerState(ChoreographerStateType.Play, 0, null);   // replaces m_WaitState
-    ScenarioRuleClient.StepComplete();
-    if (m_WaitState.m_StateWaitTickFrame < Environment.TickCount)  // the NEW state: now + 0
-        Debug.LogWarning("... timeout on :" + (m_WaitState.m_StateWaitActor != null ? ... : "null"));
+It is a logging bug. At `Choreographer.cs:2664-2669` and `:2701-2706`, the game sets its wait state to `Play` with no actor, and only then checks the wait state to decide whether to log a timeout.
 
 By then `m_WaitState` is the new `Play` state, whose actor is always null. The warning fires whenever the tick count advanced between those lines, so it does not indicate a real timeout. Real timeouts are not logged here at all. The session had 9 + 7 of these lines.
 

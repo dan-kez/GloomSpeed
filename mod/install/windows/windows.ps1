@@ -43,7 +43,7 @@ function Show-Check($dir) {
         Write-Host 'Result of the last game launch:'
         $lines | ForEach-Object { Write-Host "  $_" }
     } else {
-        Write-Host 'BepInEx ran, but GloomSpeed did not report in. Send this file to Kez:'
+        Write-Host 'BepInEx ran, but GloomSpeed did not report in. Please open an issue with this file:'
         Write-Host "  $log"
     }
 }

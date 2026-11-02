@@ -19,7 +19,7 @@ During a session, the in-game **Multiplayer** menu has a **GloomSpeed** section 
 
 **Everyone in your group should install it.** The host waits for the slowest player, so one player without it can hold up the group.
 
-> **This is an early test version.** It has been played solo on Linux and on one real Mac, and one Mac test ended in a system crash whose cause isn't known. Nothing has been run on a real Windows PC or in a session with another player. Expect rough edges, and tell Kez what happens.
+> **This is an early test version.** It has been played solo on Linux and on one real Mac, and one Mac test ended in a system crash whose cause isn't known. Nothing has been run on a real Windows PC or in a session with another player. Expect rough edges, and please [open an issue](https://github.com/dan-kez/gloomspeed/issues) with what happens.
 
 **The manual steps below don't run any scripts or download anything in the background.** The zip contains everything: the mod and [BepInEx](https://github.com/BepInEx/BepInEx), a standard mod loader. All you do is unzip it into your game folder.
 
@@ -31,7 +31,7 @@ During a session, the in-game **Multiplayer** menu has a **GloomSpeed** section 
    - **Windows:** `%USERPROFILE%\AppData\LocalLow\FlamingFowlStudios\Gloomhaven\GloomSaves`
    - **macOS:** `~/Library/Application Support/unity.FlamingFowlStudios.Gloomhaven/GloomSaves`
 4. Find your game folder: in Steam, right-click **Gloomhaven** > **Manage** > **Browse local files**.
-5. Download the zip for your computer from the [Releases page](https://github.com/dan-kez/gloomspeed/releases), or get it from Kez.
+5. Download the zip for your computer from the [Releases page](https://github.com/dan-kez/gloomspeed/releases).
 
 ---
 
@@ -126,10 +126,10 @@ Your settings are kept. Move only that file: dragging the whole `BepInEx` folder
 | Problem | What to do |
 |---|---|
 | The game won't start or behaves oddly | Follow the **Remove** steps. Your game is then back to normal. |
-| The Game Speed row is missing | The original Auto Fast Forward row stays in its place. Tell Kez and send `BepInEx/LogOutput.log`. |
-| The check shows `failed:` above 0 | The mod still works, with that feature turned off. Tell Kez. |
-| No `.app` in the Mac game folder | Your copy may not be the macOS version. Tell Kez. |
-| A desync in multiplayer | Tell Kez when it happened and send `BepInEx/LogOutput.log`. |
+| The Game Speed row is missing | The original Auto Fast Forward row stays in its place. Open an issue with `BepInEx/LogOutput.log`. |
+| The check shows `failed:` above 0 | The mod still works, with that feature turned off. Please open an issue. |
+| No `.app` in the Mac game folder | Your copy may not be the macOS version. |
+| A desync in multiplayer | Open an issue saying when it happened, with `BepInEx/LogOutput.log`. |
 | A game file seems damaged | In Steam: right-click Gloomhaven > **Properties** > **Installed Files** > **Verify integrity**. This doesn't remove the mod's files. |
 
 ## After a game update
