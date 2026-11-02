@@ -1,0 +1,5 @@
+# Game-derived code and third-party downloads stay local. Do not publish.
+decompiled/
+downloads/
+bin/
+obj/

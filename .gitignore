@@ -1,0 +1,25 @@
+# Allow-list: only code and write-ups are committed. Saves, logs, player names and
+# decompiled game code must never enter this repository.
+/*
+!/.gitignore
+!/README.md
+!/baseline/
+/baseline/*
+!/baseline/REPORT.md
+!/baseline/tools/
+!/mod/
+/mod/*
+!/mod/.gitignore
+!/mod/REPORT.md
+!/mod/GloomSpeed/
+!/mod/tools/
+!/mod/install/
+/mod/install/*
+!/mod/install/gloomspeed.sh
+!/mod/test/
+/mod/test/*
+!/mod/test/tools/
+*.dll
+*.pdb
+*.log
+*.csv
