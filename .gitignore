@@ -4,6 +4,7 @@
 !/.gitignore
 !/README.md
 !/INSTALL.md
+!/docs/
 !/baseline/
 /baseline/*
 !/baseline/REPORT.md
