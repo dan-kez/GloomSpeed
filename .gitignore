@@ -1,6 +1,7 @@
 # Allow-list: only code and write-ups are committed. Saves, logs, player names and
 # decompiled game code must never enter this repository.
 /*
+!/LICENSE
 !/.gitignore
 !/README.md
 !/INSTALL.md
