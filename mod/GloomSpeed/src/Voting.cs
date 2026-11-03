@@ -25,8 +25,11 @@ namespace GloomSpeed
     {
         InsideRight,
         Above,
-        /// <summary>Tighter to the edge, for a narrow row.</summary>
-        NarrowRow,
+        /// <summary>
+        /// Outside the row on its left. The quest list clips what's outside it, so these are drawn on the
+        /// screen's canvas and follow the row each frame.
+        /// </summary>
+        LeftOfRow,
     }
 
     internal static class Votes
@@ -159,6 +162,7 @@ namespace GloomSpeed
                     SessionStatus.SendToModdedPeers($"{Prefix};{_key};{_mine ?? NoVote}");
                 }
             }
+            VoteFollow.Tick();
             VoteHover.Tick();
             var expired = Received.Where(vote => now - vote.Value.Time > ExpireSeconds).Select(vote => vote.Key).ToList();
             if (expired.Count > 0)
@@ -217,6 +221,7 @@ namespace GloomSpeed
             {
                 return;
             }
+            VoteFollow.Remove(row);
             var holder = row.Find(HolderName);
             if (holder != null)
             {
@@ -238,7 +243,16 @@ namespace GloomSpeed
             var holder = new GameObject(name, typeof(RectTransform), typeof(CanvasGroup), typeof(LayoutElement),
                 typeof(HorizontalLayoutGroup), typeof(ContentSizeFitter));
             var rect = (RectTransform)holder.transform;
-            rect.SetParent(row, false);
+            if (placement == VotePlacement.LeftOfRow)
+            {
+                var canvas = row.GetComponentInParent<Canvas>(true)?.rootCanvas;
+                rect.SetParent(canvas != null ? canvas.transform : row, false);
+                VoteFollow.Add(row, rect);
+            }
+            else
+            {
+                rect.SetParent(row, false);
+            }
             switch (placement)
             {
                 case VotePlacement.Above:
@@ -246,10 +260,9 @@ namespace GloomSpeed
                     rect.pivot = new Vector2(0.5f, 0f);
                     rect.anchoredPosition = new Vector2(0f, 8f);
                     break;
-                case VotePlacement.NarrowRow:
-                    rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.5f);
+                case VotePlacement.LeftOfRow:
+                    rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
                     rect.pivot = new Vector2(1f, 0.5f);
-                    rect.anchoredPosition = new Vector2(-4f, 0f);
                     break;
                 default:
                     rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.5f);
@@ -331,6 +344,80 @@ namespace GloomSpeed
             tmp.fontSize = FontSize;
             tmp.enableWordWrapping = false;
             tmp.raycastTarget = false;
+        }
+    }
+
+    /// <summary>
+    /// Keeps quest list votes at the left of their row. A quest in a collapsed group has no row on screen,
+    /// so its vote waits beside the group's heading until the group opens. Votes at the same place line up.
+    /// </summary>
+    internal static class VoteFollow
+    {
+        private const float Gap = 8f;
+
+        private static readonly Dictionary<Transform, RectTransform> Holders = new Dictionary<Transform, RectTransform>();
+
+        private static readonly AccessTools.FieldRef<UIQuestLogGroup, ExtendedButton> Heading =
+            AccessTools.FieldRefAccess<UIQuestLogGroup, ExtendedButton>("hoverButton");
+
+        internal static void Add(Transform row, RectTransform holder)
+        {
+            Remove(row);
+            Holders[row] = holder;
+        }
+
+        internal static void Remove(Transform row)
+        {
+            if (Holders.TryGetValue(row, out var holder))
+            {
+                Holders.Remove(row);
+                if (holder != null)
+                {
+                    UnityEngine.Object.Destroy(holder.gameObject);
+                }
+            }
+        }
+
+        internal static void Tick()
+        {
+            if (Holders.Count == 0)
+            {
+                return;
+            }
+            var used = new Dictionary<Transform, float>();
+            var corners = new Vector3[4];
+            foreach (var entry in Holders)
+            {
+                var holder = entry.Value;
+                if (holder == null || entry.Key == null)
+                {
+                    continue;
+                }
+                var target = Target(entry.Key);
+                holder.gameObject.SetActive(target != null);
+                if (target == null)
+                {
+                    continue;
+                }
+                ((RectTransform)target).GetWorldCorners(corners);
+                // Left edge, halfway up; then step past any vote already drawn there.
+                holder.position = (corners[0] + corners[1]) / 2f;
+                used.TryGetValue(target, out float offset);
+                var local = holder.localPosition;
+                holder.localPosition = new Vector3(local.x - Gap - offset, local.y, local.z);
+                used[target] = offset + holder.rect.width + Gap;
+            }
+        }
+
+        private static Transform Target(Transform row)
+        {
+            if (row.gameObject.activeInHierarchy)
+            {
+                return row;
+            }
+            var group = row.GetComponentInParent<UIQuestLogGroup>(true);
+            var heading = group != null ? Heading(group) : null;
+            return heading != null && heading.gameObject.activeInHierarchy ? heading.transform : null;
         }
     }
 
@@ -765,6 +852,13 @@ namespace GloomSpeed
 
         private static float _nextRefresh;
 
+        /// <summary>Spare slots wait in the pool with an old quest still set, so only listed ones count.</summary>
+        private static bool InGroup(UIQuestLogSlot slot)
+        {
+            var group = slot.GetComponentInParent<UIQuestLogGroup>(true);
+            return group != null && group.Slots != null && group.Slots.Contains(slot);
+        }
+
         internal static void Tick()
         {
             if (Time.realtimeSinceStartup < _nextRefresh)
@@ -788,8 +882,9 @@ namespace GloomSpeed
             {
                 return;
             }
-            var rows = UnityEngine.Object.FindObjectsOfType<UIQuestLogSlot>()
-                .Where(slot => slot.Quest != null)
+            // Include slots in collapsed groups, which are switched off but still in the scene.
+            var rows = Resources.FindObjectsOfTypeAll<UIQuestLogSlot>()
+                .Where(slot => slot.Quest != null && slot.gameObject.scene.IsValid() && InGroup(slot))
                 .GroupBy(slot => slot.Quest.ID)
                 .ToDictionary(group => group.Key, group => group.First().transform);
             var city = UnityEngine.Object.FindObjectOfType<UICityEncounterButton>();
@@ -803,7 +898,7 @@ namespace GloomSpeed
             }
             else
             {
-                Votes.Open(KeyPrefix + state.CurrentMapPhaseType, rows, VotePlacement.NarrowRow);
+                Votes.Open(KeyPrefix + state.CurrentMapPhaseType, rows, VotePlacement.LeftOfRow);
             }
         }
     }
