@@ -14,7 +14,7 @@ namespace GloomSpeed
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.kez.gloomspeed";
-        public const string Version = "0.3.3";
+        public const string Version = "0.3.4";
         public const string RepoUrl = "https://github.com/dan-kez/gloomspeed";
 
         internal static ManualLogSource Log;
@@ -79,6 +79,8 @@ namespace GloomSpeed
                 typeof(EventReplayPatch),
                 typeof(EventHiddenPatch),
                 typeof(EventPointerPatch),
+                typeof(EventHostHoverPatch),
+                typeof(EventHostUnhoverPatch),
                 typeof(ResultShownPatch),
                 typeof(ResultRetryPatch),
                 typeof(ResultReturnPatch),

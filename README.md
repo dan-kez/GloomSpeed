@@ -14,9 +14,9 @@ Download the installer for your computer:
 
 | Your computer | Download |
 |---|---|
-| **Mac** | [`GloomSpeed-0.3.3-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.3/GloomSpeed-0.3.3-Install-macOS.zip) |
-| **Windows** | [`GloomSpeed-0.3.3-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.3/GloomSpeed-0.3.3-Install-Windows.zip) |
-| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.3-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.3/GloomSpeed-0.3.3-Install-Linux.zip) |
+| **Mac** | [`GloomSpeed-0.3.4-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.4/GloomSpeed-0.3.4-Install-macOS.zip) |
+| **Windows** | [`GloomSpeed-0.3.4-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.4/GloomSpeed-0.3.4-Install-Windows.zip) |
+| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.4-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.4/GloomSpeed-0.3.4-Install-Linux.zip) |
 
 Unzip it and double-click the installer inside. **[The install guide](INSTALL.md) walks through every step** and assumes you've never installed a mod. Your computer may show a security warning the first time, and the guide covers what to click. On a Mac you also paste one line into Steam, and the installer copies it for you. If you'd rather not run a script, the guide also covers [installing by hand](INSTALL.md#install-by-hand).
 
@@ -46,6 +46,7 @@ During multiplayer:
 - A notice appears at the top right if someone's version or speed differs, or their status can't be read.
 - It fixes a game bug where a player could stay stuck on "Waiting for other players..." when a scenario starts. Every player needs this version for that to help them.
 - **Voting:** players who aren't hosting can click options to show which they'd pick, on road and city events, quest selection, drawing a city event, and Retry or Return after a loss. Their character's icon shows beside the option, with their name on hover. The host still decides.
+- **Host preference:** on road and city events, the host's click decides at once, so the host's icon shows on the option they hover over instead.
 - **Shared Continue:** any player can press **Continue** when the enemy cards are revealed, not just the host.
 - At **Faster** and **Fastest**, personal quest progress after a scenario shows all at once, not one at a time. Four toasts take about 5.6 seconds, down from about 22.
 - The host's game can write a log of how long each player takes to finish each step, in `BepInEx/GloomSpeed`. It's stored locally, includes player names, and isn't uploaded.

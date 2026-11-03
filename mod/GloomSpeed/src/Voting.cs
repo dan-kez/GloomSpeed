@@ -513,6 +513,34 @@ namespace GloomSpeed
         }
     }
 
+    /// <summary>
+    /// The host's click decides at once, so the host shows a preference by hovering instead. The game only
+    /// calls these through the button's events, so they can't be inlined past the patch.
+    /// </summary>
+    [HarmonyPatch(typeof(EventButton), "OnHovered")]
+    internal static class EventHostHoverPatch
+    {
+        private static void Postfix(EventButton __instance)
+        {
+            if (FFSNetwork.IsHost && EventVotes.Open && !EventVotes.Unavailable.Contains(__instance.Name))
+            {
+                Votes.Set(__instance.Name);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(EventButton), "OnUnhovered")]
+    internal static class EventHostUnhoverPatch
+    {
+        private static void Postfix(EventButton __instance)
+        {
+            if (FFSNetwork.IsHost && EventVotes.Open)
+            {
+                Votes.Unset(__instance.Name);
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(EventButton), nameof(EventButton.SetUnvailableOption))]
     internal static class EventUnavailablePatch
     {

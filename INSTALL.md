@@ -138,7 +138,7 @@ A notice appears at the top right of the screen if someone's version or speed do
 
 If the host has this version or newer, players who aren't hosting can also:
 
-- **Vote:** click an option on a road or city event, select a quest, recommend drawing a city event, or pick Retry or Return after a loss. Your character's icon appears beside your pick for everyone, and hovering over it shows the character and player name, and clicking the same option again or deselecting the quest takes it back. It's only a suggestion, because the host still chooses.
+- **Vote:** click an option on a road or city event, select a quest, recommend drawing a city event, or pick Retry or Return after a loss. Your character's icon appears beside your pick for everyone, and hovering over it shows the character and player name, and clicking the same option again or deselecting the quest takes it back. It's only a suggestion, because the host still chooses. On road and city events, the host's click decides straight away, so the host shows a preference by hovering over an option instead.
 - **Press Continue** when the enemy cards are revealed. Anyone's press carries on for the whole group.
 
 Turn these off with `Voting` and `SharedContinue` in `BepInEx/config/com.kez.gloomspeed.cfg`.
@@ -224,4 +224,4 @@ This one needs a few Terminal commands, which the installer otherwise runs for y
 
 ### Check a manual install
 
-The in-game check above works here too. For more detail, reach the main menu, quit, and open `BepInEx/LogOutput.log` from your game folder. It should contain `GloomSpeed patches applied: 37, failed: 0.` If the file is missing, the mod loader didn't start. If `failed:` is above 0, the mod still works with that feature off, so please open an issue.
+The in-game check above works here too. For more detail, reach the main menu, quit, and open `BepInEx/LogOutput.log` from your game folder. It should contain `GloomSpeed patches applied: 39, failed: 0.` If the file is missing, the mod loader didn't start. If `failed:` is above 0, the mod still works with that feature off, so please open an issue.
