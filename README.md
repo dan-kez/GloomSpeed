@@ -14,9 +14,9 @@ Download the installer for your computer:
 
 | Your computer | Download |
 |---|---|
-| **Mac** | [`GloomSpeed-0.3.4-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.4/GloomSpeed-0.3.4-Install-macOS.zip) |
-| **Windows** | [`GloomSpeed-0.3.4-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.4/GloomSpeed-0.3.4-Install-Windows.zip) |
-| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.4-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.4/GloomSpeed-0.3.4-Install-Linux.zip) |
+| **Mac** | [`GloomSpeed-0.3.5-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.5/GloomSpeed-0.3.5-Install-macOS.zip) |
+| **Windows** | [`GloomSpeed-0.3.5-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.5/GloomSpeed-0.3.5-Install-Windows.zip) |
+| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.5-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.5/GloomSpeed-0.3.5-Install-Linux.zip) |
 
 Unzip it and double-click the installer inside. **[The install guide](INSTALL.md) walks through every step** and assumes you've never installed a mod. Your computer may show a security warning the first time, and the guide covers what to click. On a Mac you also paste one line into Steam, and the installer copies it for you. If you'd rather not run a script, the guide also covers [installing by hand](INSTALL.md#install-by-hand).
 
