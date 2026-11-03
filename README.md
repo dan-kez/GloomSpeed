@@ -94,6 +94,10 @@ Please [open an issue](https://github.com/dan-kez/gloomspeed/issues) if you hit 
 
 Game code, game assemblies, BepInEx, saves and session logs are deliberately not in this repository. See `.gitignore`. Release zips bundle BepInEx, with its licences included.
 
+## License
+
+GloomSpeed is released under the [MIT License](LICENSE). The release zips also bundle BepInEx and the libraries it includes, which keep their own licences, listed in `BepInEx/GloomSpeed-THIRD-PARTY-NOTICES.txt`. Gloomhaven itself and its game files aren't covered and aren't in this repository.
+
 ## Disclaimer
 
 This is an unofficial fan project, not affiliated with or endorsed by Flaming Fowl Studios, Twin Sails Interactive, Asmodee or Cephalofair Games. You need your own copy of Gloomhaven. Use it at your own risk.

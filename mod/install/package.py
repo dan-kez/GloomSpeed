@@ -21,6 +21,8 @@ PLUGIN = MOD / 'GloomSpeed/bin/Release/GloomSpeed.dll'
 NOTICES = MOD / 'install/THIRD-PARTY-NOTICES.txt'
 PLUGIN_PATH = 'BepInEx/plugins/GloomSpeed.dll'
 NOTICES_PATH = 'BepInEx/GloomSpeed-THIRD-PARTY-NOTICES.txt'
+LICENSE = ROOT / 'LICENSE'
+LICENSE_PATH = 'BepInEx/GloomSpeed-LICENSE.txt'
 EXECUTABLE = {'run_bepinex.sh'}
 FIXED_DATE = (2026, 1, 1, 0, 0, 0)
 
@@ -48,6 +50,7 @@ def full_zip(path, source, sha):
             if not name.endswith('/'):
                 add(out, name, src.read(name), name in EXECUTABLE)
         add(out, NOTICES_PATH, NOTICES.read_bytes())
+        add(out, LICENSE_PATH, LICENSE.read_bytes())
         add(out, PLUGIN_PATH, PLUGIN.read_bytes())
 
 
@@ -67,6 +70,7 @@ def main():
         with zipfile.ZipFile(DIST / f'{folder}.zip', 'w') as out:
             add(out, f'{folder}/GloomSpeed.dll', PLUGIN.read_bytes())
             add(out, f'{folder}/INSTALL.md', (ROOT / 'INSTALL.md').read_bytes())
+            add(out, f'{folder}/LICENSE.txt', LICENSE.read_bytes())
             for script in sorted((MOD / 'install' / platform.lower()).iterdir()):
                 add(out, f'{folder}/{script.name}', script.read_bytes(), executable)
 
