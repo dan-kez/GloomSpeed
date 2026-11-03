@@ -1,17 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Assets.Script.Misc;
 using Epic.OnlineServices;
 using Epic.OnlineServices.Auth;
 using FFSNet;
-using MapRuleLibrary.Adventure;
-using MapRuleLibrary.Party;
 using HarmonyLib;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Video;
 using Utilities;
 
@@ -156,87 +152,6 @@ namespace GloomSpeed
                 });
             }
             return all;
-        }
-    }
-
-    /// <summary>
-    /// Test aid, off by default: runs the party's real personal quest toasts on demand, repeating characters
-    /// to fill four. The game only shows a toast if its last shown progress differs from the current
-    /// progress, so this moves that marker. The toast then sets it back. Quest progress itself isn't touched.
-    /// </summary>
-    internal static class QuestToastTest
-    {
-        private static bool _running;
-
-        internal static void Tick()
-        {
-            if (_running || !Cfg.TestQuestToasts.Value)
-            {
-                return;
-            }
-            // The game reads input only through the Input System package. UnityEngine.Input throws here.
-            var keyboard = Keyboard.current;
-            if (keyboard == null || !keyboard[Key.F9].wasPressedThisFrame)
-            {
-                return;
-            }
-            var manager = Singleton<UIPersonalQuestResultManager>.Instance;
-            var party = AdventureState.MapState?.MapParty;
-            if (manager == null || party == null)
-            {
-                Plugin.Log.LogInfo("Toast test: only works on the world map.");
-                return;
-            }
-            try
-            {
-                var characters = party.SelectedCharacters
-                    .Where(c => c.PersonalQuest != null && c.PersonalQuest.State != EPersonalQuestState.Completed)
-                    .ToList();
-                if (characters.Count == 0)
-                {
-                    Plugin.Log.LogInfo("Toast test: no character has a personal quest in progress.");
-                    return;
-                }
-                var toasts = Enumerable.Range(0, 4).Select(i => characters[i % characters.Count]).ToArray();
-                _running = true;
-                float started = Time.realtimeSinceStartup;
-                Plugin.Log.LogInfo($"Toast test: {toasts.Length} toasts at {Presets.CurrentLabel}.");
-                manager.ShowPersonalQuestsProgress(toasts).Done(() =>
-                {
-                    _running = false;
-                    Plugin.Log.LogInfo($"Toast test finished after {Time.realtimeSinceStartup - started:F1}s.");
-                });
-            }
-            catch (Exception e)
-            {
-                _running = false;
-                Plugin.Log.LogError("Toast test failed: " + e);
-            }
-        }
-    }
-
-    /// <summary>
-    /// With the test aid on, every time the game checks for quest progress, each character has some to show.
-    /// That covers leaving a real scenario, and F9.
-    /// </summary>
-    [HarmonyPatch(typeof(UIPersonalQuestResultManager), nameof(UIPersonalQuestResultManager.ShowPersonalQuestsProgress))]
-    internal static class QuestToastTestProgressPatch
-    {
-        private static void Prefix(CMapCharacter[] characters)
-        {
-            if (!Cfg.TestQuestToasts.Value)
-            {
-                return;
-            }
-            foreach (var character in characters)
-            {
-                var quest = character.PersonalQuest;
-                if (quest != null && quest.State != EPersonalQuestState.Completed)
-                {
-                    int current = quest.PersonalQuestConditionState.CurrentProgress;
-                    quest.LastProgressShown = current > 0 ? current - 1 : current + 1;
-                }
-            }
         }
     }
 

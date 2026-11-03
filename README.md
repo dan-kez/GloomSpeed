@@ -14,9 +14,9 @@ Download the installer for your computer:
 
 | Your computer | Download |
 |---|---|
-| **Mac** | [`GloomSpeed-0.3.2-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.2/GloomSpeed-0.3.2-Install-macOS.zip) |
-| **Windows** | [`GloomSpeed-0.3.2-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.2/GloomSpeed-0.3.2-Install-Windows.zip) |
-| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.2-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.2/GloomSpeed-0.3.2-Install-Linux.zip) |
+| **Mac** | [`GloomSpeed-0.3.3-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.3/GloomSpeed-0.3.3-Install-macOS.zip) |
+| **Windows** | [`GloomSpeed-0.3.3-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.3/GloomSpeed-0.3.3-Install-Windows.zip) |
+| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.3-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.3/GloomSpeed-0.3.3-Install-Linux.zip) |
 
 Unzip it and double-click the installer inside. **[The install guide](INSTALL.md) walks through every step** and assumes you've never installed a mod. Your computer may show a security warning the first time, and the guide covers what to click. On a Mac you also paste one line into Steam, and the installer copies it for you. If you'd rather not run a script, the guide also covers [installing by hand](INSTALL.md#install-by-hand).
 
@@ -45,10 +45,20 @@ During multiplayer:
 - A **GloomSpeed** section in the in-game **Multiplayer** menu lists each player's mod version and Game Speed.
 - A notice appears at the top right if someone's version or speed differs, or their status can't be read.
 - It fixes a game bug where a player could stay stuck on "Waiting for other players..." when a scenario starts. Every player needs this version for that to help them.
+- **Voting:** players who aren't hosting can click options to show which they'd pick, on road and city events, quest selection, drawing a city event, and Retry or Return after a loss. Their character's icon shows beside the option, with their name on hover. The host still decides.
+- **Shared Continue:** any player can press **Continue** when the enemy cards are revealed, not just the host.
 - At **Faster** and **Fastest**, personal quest progress after a scenario shows all at once, not one at a time. Four toasts take about 5.6 seconds, down from about 22.
 - The host's game can write a log of how long each player takes to finish each step, in `BepInEx/GloomSpeed`. It's stored locally, includes player names, and isn't uploaded.
 
 ![Two personal quest toasts showing at once at the top right of the world map](docs/media/quest-toasts-together.png)
+
+![A voter's character icon beside a road event option, with a tooltip naming the character and player](docs/media/event-voting.png)
+
+![A voter's character icon above the city event button on the world map, with a tooltip naming the character and player](docs/media/city-voting.png)
+
+![A voter's character icon above the Return To Map button after a defeat](docs/media/result-voting.png)
+
+![The shared Continue button on a joining player's screen at the enemy card reveal](docs/media/shared-continue.png)
 
 The game's Skip Attack key no longer changes speed.
 
@@ -63,7 +73,7 @@ The game's Skip Attack key no longer changes speed.
 | Windows | Not yet run on a real PC, including the installer |
 | Multiplayer | Tested between one Linux host and one Mac, with enemy phases at full speed and no desyncs. Sessions with more players, and full scenarios, haven't been tested. How much time it saves in multiplayer hasn't been measured |
 
-It changes pacing only and doesn't touch rule code or skip acknowledgements. It adds its own small status messages between players, separate from the game's network traffic. Consider trying a throwaway campaign first.
+It changes pacing only and doesn't touch rule code or skip acknowledgements. It adds its own small status, vote and Continue messages between players, separate from the game's network traffic. Consider trying a throwaway campaign first.
 
 ### Known issues
 

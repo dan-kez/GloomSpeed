@@ -14,7 +14,7 @@ namespace GloomSpeed
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.kez.gloomspeed";
-        public const string Version = "0.3.2";
+        public const string Version = "0.3.3";
         public const string RepoUrl = "https://github.com/dan-kez/gloomspeed";
 
         internal static ManualLogSource Log;
@@ -72,7 +72,24 @@ namespace GloomSpeed
                 typeof(SkipEpicLoginPatch),
                 typeof(HideDlcPromotionPatch),
                 typeof(QuestToastsTogetherPatch),
-                typeof(QuestToastTestProgressPatch),
+                typeof(EventScreenPatch),
+                typeof(EventUnavailablePatch),
+                typeof(EventContinuePatch),
+                typeof(EventCompletePatch),
+                typeof(EventReplayPatch),
+                typeof(EventHiddenPatch),
+                typeof(EventPointerPatch),
+                typeof(ResultShownPatch),
+                typeof(ResultRetryPatch),
+                typeof(ResultReturnPatch),
+                typeof(ResultProxyRetryPatch),
+                typeof(ResultProxyExitPatch),
+                typeof(ContinueOncePatch),
+                typeof(QuestMapClickPatch),
+                typeof(QuestRowClickPatch),
+                typeof(QuestDeselectPatch),
+                typeof(CityHostSelectPatch),
+                typeof(CityHostCancelPatch),
                 typeof(MultiplayerMenuStatusPatch),
             });
             Cfg.Preset.SettingChanged += (_, _) => Presets.ApplyLive();
@@ -107,10 +124,32 @@ namespace GloomSpeed
             return (ok, failed);
         }
 
+        private bool _sessionDead;
+
         private void Update()
         {
             PresenceStatus.Tick();
-            QuestToastTest.Tick();
+            TickSession();
+        }
+
+        private void TickSession()
+        {
+            if (_sessionDead || !Cfg.Enabled.Value)
+            {
+                return;
+            }
+            try
+            {
+                SessionStatus.Poll();
+                QuestVotes.Tick();
+                Votes.Tick();
+                SharedContinue.Tick();
+            }
+            catch (Exception e)
+            {
+                _sessionDead = true;
+                Log.LogError("Voting and shared Continue stopped: " + e);
+            }
         }
 
         private void OnApplicationQuit()
@@ -128,6 +167,8 @@ namespace GloomSpeed
         internal static ConfigEntry<bool> SkipEpicLogin;
         internal static ConfigEntry<bool> HideDlcPromotion;
         internal static ConfigEntry<bool> QuestToastsTogether;
+        internal static ConfigEntry<bool> Voting;
+        internal static ConfigEntry<bool> SharedContinue;
         internal static ConfigEntry<float> Multiplier;
         internal static ConfigEntry<float> EnemyTurnMultiplier;
         internal static ConfigEntry<bool> KeepSpeedAtEndOfTurn;
@@ -142,7 +183,6 @@ namespace GloomSpeed
         internal static ConfigEntry<bool> QuietUnityLog;
         internal static ConfigEntry<bool> QuietRuleLog;
         internal static ConfigEntry<bool> AckTimingLog;
-        internal static ConfigEntry<bool> TestQuestToasts;
         internal static ConfigEntry<bool> PresenceStatus;
         internal static ConfigEntry<bool> PresenceOverlay;
         internal static ConfigEntry<bool> UiDebugLog;
@@ -172,6 +212,10 @@ namespace GloomSpeed
             AllowClientHotkey = c.Bind("Speed", "AllowClientHotkey", true,
                 "The Toggle Speed key only works for the host online. Let clients use it too (the setting is local anyway).");
 
+            Voting = c.Bind("General", "Voting", true,
+                "In multiplayer, let players who aren't the host click an option to show which one they'd pick. The host still decides. Works when the host has this version or newer.");
+            SharedContinue = c.Bind("General", "SharedContinue", true,
+                "In multiplayer, let any player with the mod press Continue when the enemy cards are revealed. Works when the host has this version or newer.");
             QuestToastsTogether = c.Bind("Pacing", "QuestToastsTogether", true,
                 "At Faster and Fastest, show all personal quest progress together after a scenario, rather than one at a time.");
             SkipEnemyBanner = c.Bind("Pacing", "SkipEnemyBanner", true,
@@ -194,8 +238,6 @@ namespace GloomSpeed
             QuietRuleLog = c.Bind("Logging", "QuietRuleLog", true,
                 "Skip the rule library's Info and SimpleLog messages, including their stack trace capture on the rule thread. Errors and warnings remain.");
 
-            TestQuestToasts = c.Bind("Diagnostics", "TestQuestToasts", false,
-                "For testing: every character shows a personal quest toast after each scenario, and on the world map F9 shows four. Doesn't change quest progress.");
             AckTimingLog = c.Bind("Diagnostics", "AckTimingLog", true,
                 "As host, record when each player reaches the end of each ability, turn and round, in BepInEx/GloomSpeed. Works with General.Enabled off.");
             PresenceStatus = c.Bind("Diagnostics", "PresenceStatus", true,
