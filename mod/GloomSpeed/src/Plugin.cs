@@ -72,6 +72,8 @@ namespace GloomSpeed
                 typeof(SkipEpicLoginPatch),
                 typeof(HideDlcPromotionPatch),
                 typeof(QuestToastsTogetherPatch),
+                typeof(NarrationSpeedPatch),
+                typeof(NarrationLinePatch),
                 typeof(EventScreenPatch),
                 typeof(EventUnavailablePatch),
                 typeof(EventContinuePatch),
@@ -143,6 +145,7 @@ namespace GloomSpeed
             try
             {
                 SessionStatus.Poll();
+                NarrationAutoAdvance.Tick();
                 QuestVotes.Tick();
                 Votes.Tick();
                 SharedContinue.Tick();
@@ -170,6 +173,8 @@ namespace GloomSpeed
         internal static ConfigEntry<bool> HideDlcPromotion;
         internal static ConfigEntry<bool> QuestToastsTogether;
         internal static ConfigEntry<bool> Voting;
+        internal static ConfigEntry<float> NarrationSpeed;
+        internal static ConfigEntry<bool> NarrationAutoAdvance;
         internal static ConfigEntry<bool> SharedContinue;
         internal static ConfigEntry<float> Multiplier;
         internal static ConfigEntry<float> EnemyTurnMultiplier;
@@ -214,6 +219,11 @@ namespace GloomSpeed
             AllowClientHotkey = c.Bind("Speed", "AllowClientHotkey", true,
                 "The Toggle Speed key only works for the host online. Let clients use it too (the setting is local anyway).");
 
+            NarrationSpeed = c.Bind("General", "NarrationSpeed", 1f,
+                new ConfigDescription("How fast story narration plays, keeping the voice's pitch. Also changed from Options > General.",
+                    new AcceptableValueList<float>(0.75f, 1f, 1.25f, 1.5f, 1.75f, 2f)));
+            NarrationAutoAdvance = c.Bind("General", "NarrationAutoAdvance", false,
+                "Go to the next narrated line when the voice finishes, without a click. Also changed from Options > General.");
             Voting = c.Bind("General", "Voting", true,
                 "In multiplayer, let players who aren't the host click an option to show which one they'd pick. The host still decides. Works when the host has this version or newer.");
             SharedContinue = c.Bind("General", "SharedContinue", true,

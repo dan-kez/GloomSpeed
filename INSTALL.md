@@ -123,6 +123,8 @@ The same tab also has:
 - **Skip Intro Logos:** skips the logos at startup. Off by default.
 - **Skip Epic Login:** stops the Epic sign-in window opening at startup. Off by default. Epic friends and invites then stay unavailable, but Steam multiplayer doesn't need them.
 - **Hide DLC Promotion:** hides the DLC advert at the top right of the main menu. Off by default.
+- **Narration Speed:** plays story narration faster or slower, from 0.75x to 2x, with the voice kept at its normal pitch. 1x by default.
+- **Auto Advance Narration:** moves to the next narrated line once the voice finishes, so you don't have to click. Off by default.
 
 ### In multiplayer
 
@@ -225,4 +227,4 @@ This one needs a few Terminal commands, which the installer otherwise runs for y
 
 ### Check a manual install
 
-The in-game check above works here too. For more detail, reach the main menu, quit, and open `BepInEx/LogOutput.log` from your game folder. It should contain `GloomSpeed patches applied: 39, failed: 0.` If the file is missing, the mod loader didn't start. If `failed:` is above 0, the mod still works with that feature off, so please open an issue.
+The in-game check above works here too. For more detail, reach the main menu, quit, and open `BepInEx/LogOutput.log` from your game folder. It should contain `GloomSpeed patches applied: 41, failed: 0.` If the file is missing, the mod loader didn't start. If `failed:` is above 0, the mod still works with that feature off, so please open an issue.

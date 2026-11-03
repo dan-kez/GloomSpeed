@@ -37,6 +37,8 @@ In the game, under **Options > General**:
 | **Skip Intro Logos** | Skips the startup video and logos. Off by default. |
 | **Skip Epic Login** | Stops the Epic sign-in window opening at startup. Off by default. Epic friends and invites stay unavailable, but Steam multiplayer doesn't need them. |
 | **Hide DLC Promotion** | Hides the DLC advert at the top right of the main menu. Off by default. |
+| **Narration Speed** | Plays story narration from 0.75x to 2x, keeping the voice at its normal pitch. 1x by default. |
+| **Auto Advance Narration** | Moves to the next narrated line when the voice finishes, without a click. Off by default. |
 
 During multiplayer:
 

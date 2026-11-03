@@ -28,7 +28,7 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
    Without this, Wine uses its own `winhttp` and BepInEx never loads. Windows players skip this step.
 4. Start the game once and quit. `BepInEx/plugins` and `BepInEx/config` should now exist. If not, check step 3.
 5. Copy `GloomSpeed.dll` to `BepInEx/plugins/`.
-6. Start the game and check `BepInEx/LogOutput.log` for `GloomSpeed patches applied: 39, failed: 0`, `GloomSpeed diagnostic patches applied: 6, failed: 0` and `GloomSpeed fix patches applied: 2, failed: 0`.
+6. Start the game and check `BepInEx/LogOutput.log` for `GloomSpeed patches applied: 41, failed: 0`, `GloomSpeed diagnostic patches applied: 6, failed: 0` and `GloomSpeed fix patches applied: 2, failed: 0`.
 
 ## Config
 
@@ -41,6 +41,8 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
 | `General.ShareSpeed` | true | n/a |
 | `General.Voting` | true | n/a |
 | `General.SharedContinue` | true | n/a |
+| `General.NarrationSpeed` | 1 | 1 |
+| `General.NarrationAutoAdvance` | false | false |
 | `Speed.Multiplier` | 5 | 3 |
 | `Speed.EnemyTurnMultiplier` | 6 | 3 |
 | `Speed.KeepSpeedAtEndOfTurn` | true | false |

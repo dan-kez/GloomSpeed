@@ -241,8 +241,11 @@ namespace GloomSpeed
             var epic = AddSwitchRow(switchRow, intro, area, "Skip Epic Login", Cfg.SkipEpicLogin);
             var promotion = AddSwitchRow(switchRow, epic, area, "Hide DLC Promotion", Cfg.HideDlcPromotion, keepOnOff: true);
             AddSwitchRow(switchRow, speed, area, "Share Speed With Players", Cfg.ShareSpeed, keepOnOff: true);
+            var narration = AddRow(sourceRow, promotion, neighbour, area, "Narration Speed", Narration.Labels,
+                Narration.SpeedIndex, index => Cfg.NarrationSpeed.Value = Narration.Speeds[index], out _);
+            var autoAdvance = AddSwitchRow(switchRow, narration, area, "Auto Advance Narration", Cfg.NarrationAutoAdvance, keepOnOff: true);
 
-            AddLinkRow(neighbour, promotion, area);
+            AddLinkRow(neighbour, autoAdvance, area);
             AddSectionHeading(settings, speed);
 
             // Last, so any failure above leaves the game's own row in place.
