@@ -14,7 +14,7 @@ namespace GloomSpeed
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "com.kez.gloomspeed";
-        public const string Version = "0.3.5";
+        public const string Version = "0.4.0";
         public const string RepoUrl = "https://github.com/dan-kez/gloomspeed";
 
         internal static ManualLogSource Log;

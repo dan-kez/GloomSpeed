@@ -10,13 +10,13 @@ A BepInEx mod that shortens presentation delays in Gloomhaven (Steam, Unity 2021
 
 ## Install
 
-Download the installer for your computer:
+Download the installer for your computer from the **[latest release](https://github.com/dan-kez/gloomspeed/releases/latest)**. These are the files for 0.4.0:
 
 | Your computer | Download |
 |---|---|
-| **Mac** | [`GloomSpeed-0.3.5-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.5/GloomSpeed-0.3.5-Install-macOS.zip) |
-| **Windows** | [`GloomSpeed-0.3.5-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.5/GloomSpeed-0.3.5-Install-Windows.zip) |
-| **Linux (Steam with Proton)** | [`GloomSpeed-0.3.5-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.3.5/GloomSpeed-0.3.5-Install-Linux.zip) |
+| **Mac** | [`GloomSpeed-0.4.0-Install-macOS.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.4.0/GloomSpeed-0.4.0-Install-macOS.zip) |
+| **Windows** | [`GloomSpeed-0.4.0-Install-Windows.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.4.0/GloomSpeed-0.4.0-Install-Windows.zip) |
+| **Linux (Steam with Proton)** | [`GloomSpeed-0.4.0-Install-Linux.zip`](https://github.com/dan-kez/gloomspeed/releases/download/v0.4.0/GloomSpeed-0.4.0-Install-Linux.zip) |
 
 Unzip it and double-click the installer inside. **[The install guide](INSTALL.md) walks through every step** and assumes you've never installed a mod. Your computer may show a security warning the first time, and the guide covers what to click. On a Mac you also paste one line into Steam, and the installer copies it for you. If you'd rather not run a script, the guide also covers [installing by hand](INSTALL.md#install-by-hand).
 
@@ -39,6 +39,12 @@ In the game, under **Options > General**:
 | **Hide DLC Promotion** | Hides the DLC advert at the top right of the main menu. Off by default. |
 | **Narration Speed** | Plays story narration from 0.75x to 2x, keeping the voice at its normal pitch. 1x by default. |
 | **Auto Advance Narration** | Moves to the next narrated line when the voice finishes, without a click. Off by default. |
+
+### Faster narration
+
+Story narration can play from **0.75x to 2x** speed, with the voice kept at its normal pitch, so it sounds like the same narrator talking faster, not a chipmunk. **Auto Advance Narration** moves on to the next line as soon as the voice finishes, so you can sit back and let the story play. Both are in **Options > General**, and only affect your own game.
+
+![The Narration Speed dropdown, from 0.75x to 2x](docs/media/narration-speed.png)
 
 During multiplayer:
 
