@@ -1,10 +1,10 @@
-# GloomSpeed (prototype)
+# GloomSpeed
 
 BepInEx 5 plugin that shortens presentation delays in Gloomhaven (Steam, Windows build, Unity 2021.3.5 Mono).
 
-**Prototype.** 0.1.0 passed solo testing under Proton (`../test/REPORT.md`). 0.3.1 was tested between a Proton host and a Mac client (`GH_OSX.app`, Intel-only under Rosetta), with no full scenario or larger group. One macOS run on an earlier 0.3.0 build ended in a WindowServer watchdog panic, cause unknown. Nothing has run on real Windows.
+**Early test version.** 0.1.0 passed solo testing under Proton (`../test/REPORT.md`). 0.3.x was tested between a Proton host and a Mac client (`GH_OSX.app`, Intel-only under Rosetta), including scenarios, events, voting and shared Continue. Sessions with three or four players and real Windows haven't been tested.
 
-It changes pacing on the machine it runs on, and skips no acknowledgements. It doesn't touch rule code or random numbers. It adds two things outside pacing: a fix for the loading notice the game can lose at scenario entry and exit (always on, `LoadingNotice*Patch` in `src/Startup.cs`), and its own status messages between players over Steam P2P (channel 7219, `src/SessionStatus.cs`), which carry the mod version and speed and let the host share its speed for the session. The same channel carries advisory votes (`src/Voting.cs`) and requests for the host to press Continue at the enemy reveal, which the host's game then presses as a normal click. No game actions are added. The host still waits for the slowest client, so everyone needs it for the full benefit. A mixed group should work, but that is untested.
+It changes pacing on the machine it runs on, and skips no acknowledgements. It doesn't touch rule code or random numbers. It adds two things outside pacing: a fix for the loading notice the game can lose at scenario entry and exit (always on, `LoadingNotice*Patch` in `src/Startup.cs`), and its own status messages between players over Steam P2P (channel 7219, `src/SessionStatus.cs`), which carry the mod version and speed and let the host share its speed for the session. The same channel carries advisory votes (`src/Voting.cs`) and requests for the host to press Continue at the enemy reveal, which the host's game then presses as a normal click. No game actions are added. The host still waits for the slowest client, so everyone needs it for the full benefit. A mixed group should work, but that's untested.
 
 ## Build
 
@@ -38,10 +38,14 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
 |---|---|---|
 | `General.Enabled` | true | false |
 | `General.Preset` | Fastest | FastForward |
+| `General.ShareSpeed` | true | n/a |
+| `General.Voting` | true | n/a |
+| `General.SharedContinue` | true | n/a |
 | `Speed.Multiplier` | 5 | 3 |
 | `Speed.EnemyTurnMultiplier` | 6 | 3 |
 | `Speed.KeepSpeedAtEndOfTurn` | true | false |
 | `Speed.AllowClientHotkey` | true | false |
+| `Pacing.QuestToastsTogether` | true | false |
 | `Pacing.SkipEnemyBanner` | true | false |
 | `Pacing.OtherBannerTimeScale` | 0.5 | 1 |
 | `Pacing.NoAnimWaitMs` | 200 | 400 |
@@ -54,18 +58,16 @@ Players should use the [install guide](../../INSTALL.md). These are the manual s
 | `Diagnostics.AckTimingLog` | true | n/a |
 | `Diagnostics.PresenceStatus` | true | n/a |
 | `Diagnostics.PresenceOverlay` | true | n/a |
-| `Pacing.QuestToastsTogether` | true | n/a |
-| `General.Voting` | true | n/a |
-| `General.SharedContinue` | true | n/a |
 | `Diagnostics.UiDebugLog` | false | n/a |
 | `Startup.SkipIntro` | false | false |
 | `Startup.SkipEpicLogin` | false | false |
+| `Startup.HideDlcPromotion` | false | false |
 
 If something misbehaves, set `General.Enabled` to false first. Then turn features on one at a time. Set the three `Logging` values to false before reporting a bug, because they remove most of `Player.log`.
 
 ## Diagnostics
 
-Both work with `General.Enabled` off, so an unmodified session can be measured.
+Both work with `General.Enabled` off, so an unmodified session can be measured. Voting and shared Continue need it on.
 
 **Acknowledgement timing (host only).** Other players don't need the mod. The host records when each player reaches the end of each ability, turn and round, and writes `BepInEx/GloomSpeed/acks-<time>.csv` and `acks-<time>-summary.txt`. The summary updates every 25 syncs and on exit. It lists each player's median and worst lag behind the first player to arrive, and the total time they alone made everyone wait. Arrival times are taken on the host, so they include network delay. These files contain player names. Only players controlling a hero are waited on, so anyone without one won't appear as holding the group up.
 
@@ -75,7 +77,7 @@ Both work with `General.Enabled` off, so an unmodified session can be measured.
 
 - **Plugin only:** delete `BepInEx/plugins/GloomSpeed.dll`.
 - **Everything:** with the game closed, delete `BepInEx/`, `winhttp.dll`, `doorstop_config.ini`, `.doorstop_version` and `changelog.txt` from the game folder, then clear the Steam launch option.
-- With `AlwaysFastForward` on, the game's Fast Forward option can be saved as on. Turn it off in the game's settings if you want it back off.
+- Any Game Speed other than Normal also saves the game's own Auto Fast Forward Animations setting as on. After removing the mod, turn it off in the game's settings if you want it back off.
 
 ## Game updates and official mods
 

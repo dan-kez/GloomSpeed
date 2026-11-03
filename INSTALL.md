@@ -14,7 +14,7 @@ You don't need any experience with mods. The installer does the work, and these 
 - [If something goes wrong](#if-something-goes-wrong)
 - [Install by hand, without the installer](#install-by-hand)
 
-> **This is an early test version.** Windows hasn't been tried on a real PC yet, including this installer. The Linux installer has only been run on a test folder, and hasn't been tried on Steam Deck. If something goes wrong, [removing the mod](#if-something-goes-wrong) puts your game back to normal, and we'd like to [hear what happened](https://github.com/dan-kez/gloomspeed/issues).
+> **This is an early test version.** Windows hasn't been tried on a real PC yet, including this installer, and Linux hasn't been tried on Steam Deck. If something goes wrong, [removing the mod](#if-something-goes-wrong) puts your game back to normal, and we'd like to [hear what happened](https://github.com/dan-kez/gloomspeed/issues).
 
 ---
 
@@ -136,9 +136,10 @@ A notice appears at the top right of the screen if someone's version or speed do
 
 ### Voting and Continue
 
-If the host has this version or newer, players who aren't hosting can also:
+If the host has GloomSpeed 0.3.3 or newer, players who aren't hosting can also:
 
-- **Vote:** click an option on a road or city event, select a quest, recommend drawing a city event, or pick Retry or Return after a loss. Your character's icon appears beside your pick for everyone, and hovering over it shows the character and player name, and clicking the same option again or deselecting the quest takes it back. It's only a suggestion, because the host still chooses. On road and city events, the host's click decides straight away, so the host shows a preference by hovering over an option instead.
+- **Vote:** click an option on a road or city event, select a quest, recommend drawing a city event, or pick Retry or Return after a loss. Your character's icon appears beside your pick for everyone, and hovering over it shows the character and player name. Clicking the same option again, or deselecting the quest, takes it back. It's only a suggestion, because the host still chooses.
+- **See the host's preference:** on road and city events, the host's click decides straight away, so the host's icon shows on whichever option they hover over.
 - **Press Continue** when the enemy cards are revealed. Anyone's press carries on for the whole group.
 
 Turn these off with `Voting` and `SharedContinue` in `BepInEx/config/com.kez.gloomspeed.cfg`.
@@ -147,7 +148,7 @@ Turn these off with `Voting` and `SharedContinue` in `BepInEx/config/com.kez.glo
 
 | What you see | What to do |
 |---|---|
-| The game won't start or behaves oddly | [Windows](#remove): run the uninstaller. [Mac](#remove-1): run the uninstaller and clear the launch option. Your game is then back to normal. |
+| The game won't start or behaves oddly | [Windows](#remove): run the uninstaller. [Mac](#remove-1): run the uninstaller and clear the launch option. [Linux](#remove-2): run the uninstaller. Your game is then back to normal. |
 | No Game Speed row in the game | Mac: check the Launch Options line from step 8, then restart the game. Windows: run the installer again and read what it reports. If that doesn't help, [open an issue](https://github.com/dan-kez/gloomspeed/issues). |
 | Windows only offers **Don't run** | Click **More info** first, then **Run anyway** appears. |
 | Mac: no **Open Anyway** button | Double-click the installer again, click **Done**, then go straight back to **Privacy & Security**. The button only stays for a while. Or skip that step: open **Terminal** (press Cmd+Space, type `Terminal`, press Return), type `bash` and a space, drag `macos.sh` from the unzipped folder into the window, type a space and `install`, and press Return. |

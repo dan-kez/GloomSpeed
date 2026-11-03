@@ -71,21 +71,14 @@ The game's Skip Attack key no longer changes speed.
 
 | | Status |
 |---|---|
-| Linux (Proton) | Played solo, and hosted multiplayer |
-| macOS | Played solo, and joined multiplayer as a client. One run on an earlier build ended in a system crash, cause unknown ([details below](#known-issues)) |
+| Linux (Proton) | Played solo, and hosted multiplayer. Installed with the release installer |
+| macOS | Played solo, and joined multiplayer as a client. Installed with the release installer |
 | Windows | Not yet run on a real PC, including the installer |
-| Multiplayer | Tested between one Linux host and one Mac, with enemy phases at full speed and no desyncs. Sessions with more players, and full scenarios, haven't been tested. How much time it saves in multiplayer hasn't been measured |
+| Multiplayer | Tested between one Linux host and one Mac: scenarios, road and city events, voting and shared Continue, with no desyncs. Sessions with three or four players haven't been tested, and the time saved in multiplayer hasn't been measured |
 
 It changes pacing only and doesn't touch rule code or skip acknowledgements. It adds its own small status, vote and Continue messages between players, separate from the game's network traffic. Consider trying a throwaway campaign first.
 
-### Known issues
-
-- **macOS crash:** a Mac froze after opening the General tab, then restarted when its display service (WindowServer) stopped responding. It didn't happen again in later testing on newer builds, but the cause is unknown, so the mod can't be ruled out.
-- **Stuck on "Waiting for other players...":** the fix is proven when a scenario starts. Returning to the map has the same risk, but the bug hasn't occurred there since the fix went in, so the fix is unproven on that path.
-- **Faster and Fastest on attacks:** attack sequences gain little, and can take slightly longer when damage prompts are answered quickly.
-- **Scrollbar:** the multiplayer menu gains a scrollbar when the GloomSpeed section appears, which narrows its rows slightly.
-
-Please [open an issue](https://github.com/dan-kez/gloomspeed/issues) if you hit something, with `BepInEx/LogOutput.log` from your game folder.
+Please [open an issue](https://github.com/dan-kez/gloomspeed/issues) if you hit something, with `BepInEx/LogOutput.log` from your game folder. Each release's notes list what hasn't been tested yet.
 
 ## What's in this repository
 
