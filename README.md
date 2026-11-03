@@ -55,6 +55,8 @@ During multiplayer:
 
 ![A voter's character icon beside a road event option, with a tooltip naming the character and player](docs/media/event-voting.png)
 
+![A voter's character icon to the left of Burning Mountain in the World Quests list](docs/media/quest-voting.png)
+
 ![A voter's character icon above the city event button on the world map, with a tooltip naming the character and player](docs/media/city-voting.png)
 
 ![A voter's character icon above the Return To Map button after a defeat](docs/media/result-voting.png)
